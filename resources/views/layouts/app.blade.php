@@ -15,6 +15,9 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <link rel="stylesheet" href="{{ asset('css/garuda.css') }}">
+
+        <!-- CSS khusus halaman (opsional) -->
+        {{ $head ?? '' }}
     </head>
     <body>
         <div class="halaman">
