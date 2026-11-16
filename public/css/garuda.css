@@ -1,0 +1,7 @@
+/* Gaya khusus Garuda Arena (CSS biasa, tidak diproses Tailwind).
+   Tailwind tetap dipakai lewat Vite untuk gaya halaman. */
+
+/* Sembunyikan elemen Alpine.js sampai Alpine siap (mencegah kedipan). */
+[x-cloak] {
+    display: none !important;
+}
