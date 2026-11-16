@@ -113,15 +113,26 @@ Tes bawaan Breeze (25) dan `LocaleTest` (2) lulus saat terakhir dijalankan; angk
 
 ## 8. Langkah berikutnya (satu langkah per percakapan)
 
-**Selesai:** kerangka Laravel + Breeze, locale `id` / timezone `Asia/Jakarta`. Pastikan commit/push sudah dilakukan (`git log`, `git status --short`).
+**Selesai:** Langkah 0 (fondasi: kerangka Laravel + Breeze, locale `id` / timezone `Asia/Jakarta`). Pastikan commit/push sudah dilakukan (`git log`, `git status --short`).
 
 | Langkah | Isi | Target |
 | --- | --- | --- |
-| **1** | Migrasi (`users.role`, `fields`, `bookings`), model + konstanta, seeder 8 lapangan + admin + pelanggan demo + booking demo, `config/garuda.php`, salin foto ke `public/images/`, layout Garuda (Tailwind token + font), tes model/seeder | 14-15 Nov |
-| 2 | Katalog: beranda, daftar, detail lapangan (tampilan) | 16-17 Nov |
-| 3 | Booking + cek bentrok (inti, bertes, uji mutasi) | 18 Nov |
-| 4 | Pembayaran (unggah bukti) + riwayat pelanggan | 19-20 Nov |
-| 5 | Admin: verifikasi booking + kelola lapangan | 21 Nov |
-| 6 | Telusur browser per peran, naskah demo, perbaikan | 22 Nov |
+| **A** | Skema, model, seeder, layout Garuda (rincian di bawah) | 14-15 Nov |
+| B | Katalog: beranda, daftar, detail lapangan (tampilan) | 16-17 Nov |
+| C | Booking + cek bentrok (inti, bertes, uji mutasi) | 18 Nov |
+| D | D1 pembayaran (unggah bukti); D2 riwayat pelanggan | 19-20 Nov |
+| E | E1 admin verifikasi booking; E2 admin kelola lapangan | 21 Nov |
+| F | Telusur browser per peran, naskah demo, perbaikan | 22 Nov |
 
-Sisa/opsional: dashboard dan laporan admin, log aktivitas, pesan validasi berbahasa Indonesia (`lang/id`), perbarui `README.md` (masih README prototipe di `prototipe-statis/`; README akar belum ada), Pull Request ke `main`.
+Sisa/opsional (setelah F, bila waktu ada): dashboard dan laporan admin, log aktivitas, pesan validasi `lang/id`, README akar, Pull Request ke `main`.
+
+### Langkah A — Skema, model, seeder, layout (berikutnya)
+1. **Migrasi baru** (jangan ubah migrasi lama): kolom `role` di `users` (bawaan `pelanggan`), tabel `fields`, tabel `bookings` (bagian 4; kunci asing `restrict`, indeks `(field_id, date)`).
+2. **`config/garuda.php`:** `open_hour=8`, `close_hour=23`, `pay_window_minutes=60`.
+3. **Model** `Field` dan `Booking` + konstanta status/peran + relasi + cast (`facilities` = array); `User::isAdmin()`.
+4. **Seeder:** 8 lapangan dari `prototipe-statis/webnya/js/data-lapangan.js`, 1 admin, 3 pelanggan demo, beberapa booking demo campur status tanpa bentrok. Kata sandi demo dicatat pemilik di luar repo, tidak di UI.
+5. **Foto:** salin `prototipe-statis/webnya/images/` ke `public/images/`.
+6. **Layout Garuda:** font Poppins/Inter dan warna di `tailwind.config.js` (ganti Figtree), layout dasar dengan navigasi.
+7. **Tes:** relasi dan konstanta, seeder (8 lapangan, 1 admin), peran bawaan. Pemilik menjalankan `migrate:fresh --seed` lalu `php artisan test`.
+
+**Yang perlu ditempel sebelum Claude menulis kode Langkah A:** `database/migrations/0001_01_01_000000_create_users_table.php`, `app/Models/User.php`, `database/seeders/DatabaseSeeder.php`, `tailwind.config.js`, `resources/views/layouts/app.blade.php`, `resources/views/layouts/guest.blade.php`, dan `sed -n '56,130p' prototipe-statis/webnya/js/data-lapangan.js` (lapangan 4-8 belum terlihat utuh).
