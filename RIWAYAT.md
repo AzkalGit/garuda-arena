@@ -53,3 +53,11 @@
 - Pint juga merapikan `ExampleTest.php` (baris kosong akhir file).
 - **Belum dilakukan:** uji mutasi (dilewati atas keputusan pemilik), telusur browser (tampilan `fields/show`, alur klik per peran).
 - Catatan: `lockForUpdate` tidak berefek di SQLite (basis tes), jadi balapan dua klik hanya terbukti lewat penalaran.
+
+## Langkah D1: pembayaran dan unggah bukti (16 Nov 2026, <<HASH D1>>)
+
+- **Baru:** `PaymentController` (`show`, `store`), `SubmitProofRequest`, view `payments/show`, `PaymentTest` (14 tes). Rute `pembayaran.show` (GET) dan `pembayaran.store` (POST) di grup `auth`, binding lewat kolom `code`.
+- **Diubah:** `Booking` (+ `tanggalLabel()`, `tarifLabel()`, `bisaDibayar()`, `sisaMenit()`, `kirimBukti()`), `BookingPolicy` (+ `view`, `pay`), `BookingController@store` (redirect ke `pembayaran.show`, flash `booking_sukses` dihapus), `routes/web.php`, `BookingTest` (satu tes diubah, satu diganti).
+- **Keputusan:** bukti hanya JPG/PNG maks. 2 MB (mengikuti prototipe, bukan PDF). Orang lain, termasuk admin, mendapat 404 (`Response::denyAsNotFound()`). `kirimBukti()` mengecek ulang status di dalam transaksi dengan `lockForUpdate`. Tanpa JavaScript: sisa waktu bayar ditulis sebagai menit dari server. Nomor rekening fiktif ditulis langsung di view.
+- **Pengujian:** 87 passed (293 assertions). Tampilan halaman pembayaran sudah dilihat di browser (tahap `bayar`: foto, kode, total, sisa waktu tampil). Unggah bukti lewat browser dan tampilan layar sempit belum dilaporkan. **Uji mutasi D1 belum dilakukan.**
+- **Sisa:** kotak sukses mati di `fields/show.blade.php` (baris sekitar 72-77, pakai `session('booking_sukses')`) belum dihapus.
