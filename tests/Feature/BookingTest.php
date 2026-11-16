@@ -94,11 +94,10 @@ class BookingTest extends TestCase
     {
         $user = $this->buatPelanggan();
 
-        $this->kirim($user)
-            ->assertSessionHasNoErrors()
-            ->assertRedirect(route('lapangan.show', ['field' => $this->lapangan->id, 'tanggal' => '2026-11-21']));
+        $respons = $this->kirim($user)->assertSessionHasNoErrors();
 
         $booking = Booking::firstOrFail();
+        $respons->assertRedirect(route('pembayaran.show', ['booking' => $booking->code]));
         $this->assertSame($user->id, $booking->user_id);
         $this->assertSame($this->lapangan->id, $booking->field_id);
         $this->assertSame('2026-11-21', $booking->date->toDateString());
@@ -121,7 +120,7 @@ class BookingTest extends TestCase
         $this->assertSame(360000, $booking->total);
     }
 
-    public function test_pesan_sukses_tampil_setelah_booking(): void
+    public function test_halaman_pembayaran_tampil_setelah_booking(): void
     {
         $this->actingAs($this->buatPelanggan())
             ->followingRedirects()
@@ -132,8 +131,9 @@ class BookingTest extends TestCase
                 'duration' => 2,
             ])
             ->assertOk()
-            ->assertSee('Booking berhasil dibuat')
-            ->assertSee('GA-2111-');
+            ->assertSee('Transfer manual')
+            ->assertSee('GA-2111-')
+            ->assertSee('Rp 360.000');
     }
 
     // ---------- Cek bentrok ----------

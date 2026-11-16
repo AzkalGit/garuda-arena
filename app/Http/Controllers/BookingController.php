@@ -22,13 +22,6 @@ class BookingController extends Controller
             $request->integer('duration'),
         );
 
-        return redirect()
-            ->route('lapangan.show', ['field' => $field->id, 'tanggal' => $booking->date->toDateString()])
-            ->with('booking_sukses', [
-                'kode' => $booking->code,
-                'tanggal' => $booking->date->locale('id')->translatedFormat('l, j F Y'),
-                'jam' => $booking->jamLabel(),
-                'total' => $booking->totalLabel(),
-            ]);
+        return redirect()->route('pembayaran.show', ['booking' => $booking->code]);
     }
 }

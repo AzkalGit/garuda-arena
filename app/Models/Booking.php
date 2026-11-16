@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -73,6 +74,69 @@ class Booking extends Model
     public function totalLabel(): string
     {
         return 'Rp '.number_format($this->total, 0, ',', '.');
+    }
+
+    /** Contoh: "Sabtu, 21 November 2026". */
+    public function tanggalLabel(): string
+    {
+        return $this->date->locale('id')->translatedFormat('l, j F Y');
+    }
+
+    /** Contoh: "Rp 180.000 / jam". */
+    public function tarifLabel(): string
+    {
+        return 'Rp '.number_format($this->price_per_hour, 0, ',', '.').' / jam';
+    }
+
+    /** Masih bisa dibayar: menunggu_pembayaran dan belum lewat batas bayar. */
+    public function bisaDibayar(): bool
+    {
+        return $this->status === self::STATUS_MENUNGGU_PEMBAYARAN
+            && ($this->expires_at === null || $this->expires_at->gte(now()));
+    }
+
+    /** Sisa waktu bayar dalam menit (dibulatkan ke atas, minimal 0). */
+    public function sisaMenit(): int
+    {
+        if ($this->expires_at === null) {
+            return 0;
+        }
+
+        return max(0, (int) ceil(($this->expires_at->timestamp - now()->timestamp) / 60));
+    }
+
+    /**
+     * Simpan bukti bayar (disk privat) dan ubah status ke menunggu_verifikasi.
+     * Status dicek ulang di dalam transaksi dengan kunci baris.
+     *
+     * @throws ValidationException
+     */
+    public function kirimBukti(UploadedFile $berkas): void
+    {
+        self::perbaruiStatus();
+
+        DB::transaction(function () use ($berkas) {
+            $baris = self::query()->lockForUpdate()->findOrFail($this->id);
+
+            if (! $baris->bisaDibayar()) {
+                throw ValidationException::withMessages([
+                    'proof' => 'Booking ini sudah tidak dapat dibayar (waktu habis, dibatalkan, atau bukti sudah dikirim).',
+                ]);
+            }
+
+            $path = $berkas->store('bukti-bayar', 'local');
+
+            $baris->update([
+                'proof_path' => $path,
+                'proof_name' => $berkas->getClientOriginalName(),
+                'proof_submitted_at' => now(),
+                'status' => self::STATUS_MENUNGGU_VERIFIKASI,
+                'expires_at' => null,
+                'rejection_reason' => null,
+            ]);
+        });
+
+        $this->refresh();
     }
 
     /**
