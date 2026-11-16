@@ -80,3 +80,15 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - payments/show.blade.php ditulis ulang tanpa Tailwind/style; CSS di public/css/pembayaran.css (377 baris), dimuat lewat slot head.
 - Tombol kirim (.tombol-kirim, oranye) dan tombol kembali (.tombol-kembali, merah) memakai kelas sendiri, bukan .tombol-hijau.
 - Tes: 87 passed (293 assertions). Telusur browser: belum dilaporkan.
+
+### Langkah E1 — Admin verifikasi booking (17 Nov 2026) · 117 passed
+
+- Rute admin (grup `admin.`, di dalam middleware `auth`): `admin.bookings.index` (GET /admin/booking, filter `?status=` dan pencarian `?q=`), `admin.bookings.bukti` (GET, unduh bukti), `admin.bookings.setujui` (POST), `admin.bookings.tolak` (POST).
+- `Booking`: `bisaDiverifikasi()`, `setujui(User)`, `tolak(User, alasan)`. Keduanya memakai transaksi + `lockForUpdate` + cek ulang status. Pelanggaran status memberi `ValidationException` kunci `booking`.
+- Tolak bukti: jam mulai belum lewat -> kembali ke `menunggu_pembayaran` dengan `expires_at` baru (60 menit); sudah lewat -> `dibatalkan` (`cancelled_reason` = "Bukti pembayaran ditolak: ..."). `rejection_reason` selalu terisi. Berkas bukti lama dihapus dari disk privat; `proof_path`, `proof_name`, `proof_submitted_at` dikosongkan.
+- Alasan awal (default usulan "pakai `expires_at`") diganti karena `kirimBukti()` mengosongkan `expires_at`; yang dipakai adalah jam mulai main.
+- `BookingPolicy`: `kelola` (daftar) dan `verify` (setujui/tolak/unduh), keduanya hanya admin (selain itu 403). `RejectBookingRequest`: `alasan` wajib, 5–255 karakter.
+- Unduh bukti: bila `proof_path` kosong atau berkas tidak ada (data demo), redirect ke daftar dengan galat `booking`.
+- View `admin/bookings/index` memakai ulang `riwayat.css` + `admin-booking.css`. Aksi tolak memakai kolom teks alasan di baris tabel (tanpa JavaScript).
+- Tes baru: `AdminBookingTest` (13 tes). Total 104 -> 117.
+- Belum dicek di browser. Belum ada: `rejection_reason` tampil di halaman pembayaran pelanggan.

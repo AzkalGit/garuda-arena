@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\HistoryController;
@@ -21,6 +22,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/riwayat', [HistoryController::class, 'index'])->name('riwayat.index');
     Route::post('/riwayat/{booking:code}/batal', [HistoryController::class, 'batal'])->name('riwayat.batal');
+
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/booking', [AdminBookingController::class, 'index'])->name('bookings.index');
+        Route::get('/booking/{booking:code}/bukti', [AdminBookingController::class, 'bukti'])->name('bookings.bukti');
+        Route::post('/booking/{booking:code}/setujui', [AdminBookingController::class, 'setujui'])->name('bookings.setujui');
+        Route::post('/booking/{booking:code}/tolak', [AdminBookingController::class, 'tolak'])->name('bookings.tolak');
+    });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

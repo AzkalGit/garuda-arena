@@ -43,4 +43,16 @@ class BookingPolicy
             ? Response::allow()
             : Response::denyAsNotFound();
     }
+
+    /** Melihat daftar semua booking di panel admin: hanya admin (selain itu 403). */
+    public function kelola(User $user): bool
+    {
+        return $user->isAdmin();
+    }
+
+    /** Setujui, tolak, dan unduh bukti: hanya admin (selain itu 403). */
+    public function verify(User $user, Booking $booking): bool
+    {
+        return $user->isAdmin();
+    }
 }

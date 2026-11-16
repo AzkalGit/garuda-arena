@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -308,6 +309,84 @@ class Booking extends Model
         }
 
         return $peta;
+    }
+
+    /** Admin hanya bisa memverifikasi booking yang menunggu verifikasi. */
+    public function bisaDiverifikasi(): bool
+    {
+        return $this->status === self::STATUS_MENUNGGU_VERIFIKASI;
+    }
+
+    /**
+     * Admin menyetujui bukti bayar -> dikonfirmasi.
+     * Status dicek ulang di dalam transaksi dengan kunci baris.
+     *
+     * @throws ValidationException
+     */
+    public function setujui(User $admin): void
+    {
+        DB::transaction(function () use ($admin) {
+            $baris = self::query()->lockForUpdate()->findOrFail($this->id);
+
+            if (! $baris->bisaDiverifikasi()) {
+                throw ValidationException::withMessages([
+                    'booking' => 'Booking ini tidak sedang menunggu verifikasi.',
+                ]);
+            }
+
+            $baris->forceFill([
+                'status' => self::STATUS_DIKONFIRMASI,
+                'rejection_reason' => null,
+                'verified_by' => $admin->id,
+                'verified_at' => now(),
+            ])->save();
+        });
+
+        $this->refresh();
+    }
+
+    /**
+     * Admin menolak bukti bayar. Jam mulai belum lewat -> kembali ke
+     * menunggu_pembayaran dengan batas bayar baru; sudah lewat -> dibatalkan.
+     * Alasan penolakan selalu disimpan; berkas bukti lama dihapus.
+     *
+     * @throws ValidationException
+     */
+    public function tolak(User $admin, string $alasan): void
+    {
+        $berkasLama = null;
+
+        DB::transaction(function () use ($admin, $alasan, &$berkasLama) {
+            $baris = self::query()->lockForUpdate()->findOrFail($this->id);
+
+            if (! $baris->bisaDiverifikasi()) {
+                throw ValidationException::withMessages([
+                    'booking' => 'Booking ini tidak sedang menunggu verifikasi.',
+                ]);
+            }
+
+            $berkasLama = $baris->proof_path;
+            $mulai = $baris->date->copy()->startOfDay()->setTime($baris->start_hour, 0);
+            $masihBisa = $mulai->gt(now());
+
+            $baris->forceFill([
+                'status' => $masihBisa ? self::STATUS_MENUNGGU_PEMBAYARAN : self::STATUS_DIBATALKAN,
+                'expires_at' => $masihBisa ? now()->addMinutes((int) config('garuda.pay_window_minutes')) : null,
+                'rejection_reason' => $alasan,
+                'cancelled_reason' => $masihBisa ? null : 'Bukti pembayaran ditolak: '.$alasan,
+                'proof_path' => null,
+                'proof_name' => null,
+                'proof_submitted_at' => null,
+                'verified_by' => $admin->id,
+                'verified_at' => now(),
+            ])->save();
+        });
+
+        if ($berkasLama !== null) {
+            Storage::disk('local')->delete($berkasLama);
+        }
+
+        $this->refresh();
     }
 
     /** @return array<int, int> jam-jam (mulai) yang sudah terpakai booking tidak dibatalkan. */
