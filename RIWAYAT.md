@@ -75,3 +75,8 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - fields/show.blade.php ditulis ulang tanpa Tailwind/style; CSS di public/css/detail.css (444 baris), dimuat lewat slot head.
 - Kotak session('booking_sukses') yang mati dihapus.
 - Tes: 87 passed (293 assertions). Telusur browser: belum dilaporkan.
+
+## R3b: pembayaran dengan kelas sendiri
+- payments/show.blade.php ditulis ulang tanpa Tailwind/style; CSS di public/css/pembayaran.css (377 baris), dimuat lewat slot head.
+- Tombol kirim (.tombol-kirim, oranye) dan tombol kembali (.tombol-kembali, merah) memakai kelas sendiri, bukan .tombol-hijau.
+- Tes: 87 passed (293 assertions). Telusur browser: belum dilaporkan.
