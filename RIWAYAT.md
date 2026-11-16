@@ -63,3 +63,10 @@
 - **Sisa:** kotak sukses mati di `fields/show.blade.php` (baris sekitar 72-77, pakai `session('booking_sukses')`) belum dihapus.
 
 Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public/css. garuda.css dibuat (variabel, dasar, tombol, navbar, footer, beranda) dan dimuat setelah @vite di layout app dan guest. Dua style="display: ..." Breeze (modal, dropdown) diganti x-cloak. View layouts/app, navigation, footer, home ditulis ulang dengan kelas sendiri (bahasa Indonesia, istilah umum Inggris); menu mobile memakai x-show + x-cloak. x-field-card, fields/*, payments/* masih Tailwind (R2, R3). Tailwind tetap dimuat untuk halaman Breeze. Belum diuji di browser.
+
+### R2 — field-card dan katalog dengan kelas sendiri (`81030bc`, + `c082ffb`)
+- `layouts/app.blade.php`: tambah slot `head` (`{{ $head ?? '' }}`) untuk CSS per halaman.
+- `components/field-card` dan `fields/index` ditulis ulang tanpa Tailwind. Kelas kartu (`.kartu-*`, `.lencana-*`, `.tombol-hijau`, `.tombol-nonaktif`) masuk `garuda.css`; filter dan katalog di `public/css/katalog.css` (dimuat lewat `<x-slot name="head">`).
+- Teks, rute, dan perilaku tidak berubah. Tidak ada tes yang memeriksa nama kelas.
+- Tes: 87 passed (293 assertions), tidak berubah.
+- Belum: telusur browser rinci (beranda, 4/2/1 kolom, filter, keadaan kosong, lapangan nonaktif). Blok `@media` akhir `garuda.css` sebelumnya tidak tertutup; sudah ditutup.
