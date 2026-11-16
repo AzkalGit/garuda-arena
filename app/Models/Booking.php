@@ -200,9 +200,59 @@ class Booking extends Model
         });
     }
 
+    /** @return array<string, string> kunci status => label tampilan, urut sesuai tab filter riwayat. */
+    public static function daftarStatus(): array
+    {
+        return [
+            self::STATUS_MENUNGGU_PEMBAYARAN => 'Menunggu pembayaran',
+            self::STATUS_MENUNGGU_VERIFIKASI => 'Menunggu verifikasi',
+            self::STATUS_DIKONFIRMASI => 'Dikonfirmasi',
+            self::STATUS_SELESAI => 'Selesai',
+            self::STATUS_DIBATALKAN => 'Dibatalkan',
+        ];
+    }
+
+    public function statusLabel(): string
+    {
+        return self::daftarStatus()[$this->status] ?? $this->status;
+    }
+
+    /** Akhiran kelas CSS lencana: `menunggu_pembayaran` -> `menunggu-pembayaran`. */
+    public function statusKelas(): string
+    {
+        return str_replace('_', '-', $this->status);
+    }
+
+    /**
+     * Pelanggan membatalkan booking. Status dicek ulang di dalam transaksi
+     * (dengan kunci baris); hanya `menunggu_pembayaran` yang boleh dibatalkan.
+     */
+    public function batalkan(): void
+    {
+        DB::transaction(function () {
+            $baris = self::query()->lockForUpdate()->findOrFail($this->id);
+
+            if ($baris->status !== self::STATUS_MENUNGGU_PEMBAYARAN) {
+                throw ValidationException::withMessages([
+                    'booking' => 'Booking ini tidak bisa dibatalkan lagi.',
+                ]);
+            }
+
+            $baris->forceFill([
+                'status' => self::STATUS_DIBATALKAN,
+                'expires_at' => null,
+                'cancelled_reason' => 'Dibatalkan pelanggan',
+            ])->save();
+        });
+
+        $this->refresh();
+    }
+
     /**
      * Pembaruan status otomatis (tanpa scheduler): dipanggil controller/model
-     * sebelum membaca data. Saat ini: batas bayar terlewat -> dibatalkan.
+     * sebelum membaca data.
+     * - batas bayar terlewat -> dibatalkan
+     * - dikonfirmasi yang jam mainnya sudah lewat -> selesai
      */
     public static function perbaruiStatus(): void
     {
@@ -214,6 +264,24 @@ class Booking extends Model
                 'status' => self::STATUS_DIBATALKAN,
                 'cancelled_reason' => 'Waktu pembayaran habis',
             ]);
+
+        $sekarang = now();
+
+        $idSelesai = self::query()
+            ->where('status', self::STATUS_DIKONFIRMASI)
+            ->whereDate('date', '<=', $sekarang->toDateString())
+            ->get()
+            ->filter(fn (self $booking) => Carbon::parse($booking->date)
+                ->startOfDay()
+                ->setTime($booking->endHour(), 0)
+                ->lte($sekarang))
+            ->pluck('id');
+
+        if ($idSelesai->isNotEmpty()) {
+            self::query()
+                ->whereIn('id', $idSelesai)
+                ->update(['status' => self::STATUS_SELESAI]);
+        }
     }
 
     /**
