@@ -29,6 +29,10 @@ Pemilik **bukan programmer mahir** (vibecoder): jelaskan perintah dengan jelas, 
 17. **`git push` menggantung di terminal VS Code?** Awali dengan `GIT_ASKPASS=`, atau matikan `git.useIntegratedAskPass`. Login memakai token GitHub; jangan pernah menempel token ke chat.
 18. **Setelah `vendor/bin/pint`, kode yang tersimpan sudah berbeda dari yang Claude tulis** (spasi operator dsb.). Karena itu, untuk file yang akan diubah lagi, minta tempel ulang versi terbaru (aturan 2).
 19. **Saat mengubah perilaku, cari tes lama yang terdampak** dengan `grep` pada teks yang ditampilkan view *dan* nama rute/flash (bukan hanya salah satunya); tes lama yang memeriksa perilaku yang sengaja diganti diubah, bukan dibiarkan gagal.
+20. **CSS (aturan dosen, nilai dikurangi bila dilanggar):** CSS wajib terpisah dari view, berupa berkas di `public/css/`. Di view buatan sendiri dilarang `<style>`, `style=""`, dan kelas Tailwind. Pakai kelas buatan sendiri: bahasa Indonesia, istilah umum tetap Inggris (`navbar`, `footer`, `hero`, `grid`); jangan memaksa terjemahan yang aneh. Ini menggantikan butir "Tampilan" di bagian 2 untuk halaman buatan sendiri. Warna dan font kini variabel di `:root` pada `garuda.css` (`--hijau` #15803d, `--hijau-tua` #14532d, `--aksen` #ea580c, `--latar`, `--garis`, `--font-judul` Poppins, `--font-isi` Inter).
+21. **Cara menulis CSS:** CSS polos (tanpa `@apply`), nilainya disamakan dengan Tailwind sebelumnya agar tampilan tidak berubah, responsif lewat `@media (min-width: ...)`. `garuda.css` = variabel, dasar, layout, tombol, navbar, footer, beranda, dan kartu lapangan (dipakai beranda dan katalog). Halaman lain: berkas sendiri di `public/css/` (usul `katalog.css`, `detail.css`, `pembayaran.css`, dst), dimuat lewat `<link>` di view halamannya atau slot `head`. Cek dulu cara memuatnya sebelum menulis (layout `app` hanya memuat `garuda.css`).
+22. **Tailwind tetap dimuat lewat `@vite`**, jangan dicabut: halaman Breeze (login, daftar, profil) dan komponen `dropdown`, `dropdown-link`, `modal` masih bergantung padanya. `garuda.css` dimuat setelah `@vite`. Menampilkan/menyembunyikan elemen memakai Alpine `x-show` + `x-cloak`, bukan kelas `hidden`. Menulis ulang halaman Breeze hanya bila dosen mempermasalahkan.
+23. **Halaman baru (D2, E) langsung ditulis dengan kelas sendiri**, tanpa Tailwind. Tiap serahan view memuat: berkas CSS-nya, dan daftar hal yang harus dicek di browser (layar lebar dan sempit).
 
 **Prompt serah-terima** (tempel bersama berkas ini ke percakapan baru):
 
@@ -125,6 +129,7 @@ Pelanggan **hanya** melihat booking miliknya (booking orang lain = 404, bertes u
 Terkonfirmasi: **87 passed (293 assertions)** (Breeze 25 + LocaleTest 2 + FondasiTest 8 + KatalogTest 11 + DetailLapanganTest 5 + BookingTest 22 + PaymentTest 14). `BookingTest` dan `PaymentTest` membekukan waktu di 20 Nov 2026 10:00.
 
 **Belum dilakukan:**
+- **Telusur browser R1** (beranda, navbar sticky, menu hamburger berganti ikon, dropdown pengguna, footer, `field-card` masih Tailwind dan harus tetap normal, login tetap rapi, layar sempit). Bila tampilan polos, ikuti aturan 11.
 - **Uji mutasi Langkah C dan D1 dilewati.** Usul D1: (1) komentari `Gate::authorize('pay', ...)` di `SubmitProofRequest`, (2) `if (! $baris->bisaDibayar())` → `if (false)` di `kirimBukti()`, (3) `'max:2048'` → `'max:20480'`, (4) `store('bukti-bayar', 'local')` → `'public'`. Usul C: komentari `->whereRaw('start_hour + duration > ?', ...)`, `->where('start_hour', '<', $selesai)`, `->where('field_id', $fieldId)` di `queryAktif()`, dan ubah `authorize()` jadi `return true;`.
 - **Telusur browser:** halaman pembayaran tahap `bayar` sudah terlihat benar (foto, kode, total, sisa waktu). Belum dilaporkan: unggah bukti sungguhan di browser, tahap `menunggu_verifikasi`/`dibatalkan` di browser, layar sempit, filter/detail/radio jam (B1, B2, C), alur per peran.
 - Balapan dua klik hanya terbukti lewat penalaran (`lockForUpdate` tidak berefek di SQLite).
@@ -136,13 +141,22 @@ Terkonfirmasi: **87 passed (293 assertions)** (Breeze 25 + LocaleTest 2 + Fondas
 | Langkah | Isi | Target |
 | --- | --- | --- |
 | ~~A, B1, B2, C, D1~~ | ~~Fondasi, katalog, detail, booking, pembayaran~~ | selesai 16 Nov |
-| **D2** | Riwayat pelanggan (`riwayat.index`), batalkan, transisi `selesai` | 19-20 Nov |
+| ~~CSS, R1~~ | ~~`garuda.css`, `x-cloak`, layout `app`, navbar, footer, beranda dengan kelas sendiri~~ | kode selesai 16 Nov (tes dan browser: lihat bagian 7) |
+| **R2** | `components/field-card` + `fields/index` → kelas sendiri | 17 Nov |
+| R3 | `fields/show` + `payments/show` → kelas sendiri | 18 Nov |
+| **D2** | Riwayat pelanggan (`riwayat.index`), batalkan, transisi `selesai`; **CSS sendiri sejak awal** | 19-20 Nov |
 | E | E1 admin verifikasi booking (`admin.bookings.index`); E2 admin kelola lapangan | 21 Nov |
 | F | Telusur browser per peran, naskah demo, perbaikan | 22 Nov |
 
 Sisa/opsional: dashboard dan laporan admin, log aktivitas, pesan validasi `lang/id`, README akar, Pull Request ke `main`, uji mutasi yang tertunda, pindahkan nomor rekening ke `config/garuda.php`.
 
-### Langkah D2 — Riwayat pelanggan (berikutnya)
+### Langkah R2 — field-card dan katalog (berikutnya)
+- Tulis ulang `resources/views/components/field-card.blade.php` dan `resources/views/fields/index.blade.php` dengan kelas sendiri (aturan 20-22). `field-card` dipakai beranda dan katalog, jadi CSS kartunya masuk `garuda.css` (kelas `.grid-kartu` sudah ada di sana); CSS filter/katalog ke `public/css/katalog.css` (default; pemilik belum menjawab apakah dipisah per halaman). Halaman ini memuat `katalog.css` lewat `<link>`; tentukan caranya setelah melihat `app.blade.php` (belum punya slot `head`).
+- Pertahankan teks, rute, dan perilaku (`Tampilkan N dari M lapangan`, keadaan kosong, tombol Reset). Hindari kelas Tailwind sama sekali, termasuk pada `<select>` (reset bawaan Tailwind tetap aktif, jadi beri border, radius, dan padding sendiri).
+- Perintah awal: `for f in resources/views/components/field-card.blade.php resources/views/fields/index.blade.php public/css/garuda.css; do echo "=== $f ==="; cat "$f"; done` (`garuda.css` ±510 baris; bila terlalu panjang cukup `grep -n "^\." public/css/garuda.css | head -n 80`).
+- Setelah R2 dan R3, baru D2.
+
+### Langkah D2 — Riwayat pelanggan (setelah R3)
 Usul default (konfirmasi bila ingin lain):
 - `GET /riwayat` (`riwayat.index`): daftar booking **milik sendiri**, terbaru dulu, label status, filter status lewat `?status=` (nilai tak dikenal diabaikan, tanpa JavaScript), keadaan kosong mengikuti prototipe. Tombol **Bayar** (ke `pembayaran.show`, bila `bisaDibayar()`) dan **Batalkan** (hanya `menunggu_pembayaran`; alasan "Dibatalkan pelanggan").
 - `POST /riwayat/{booking:code}/batal` (nama rute usul: `riwayat.batal`): lewat `BookingPolicy` (metode baru `cancel`; orang lain 404), metode model `Booking::batalkan()` dengan cek ulang status di transaksi.
