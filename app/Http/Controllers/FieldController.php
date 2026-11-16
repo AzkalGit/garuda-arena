@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\Field;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\View\View;
 
 class FieldController extends Controller
@@ -59,15 +61,25 @@ class FieldController extends Controller
         ]);
     }
 
-    public function show(Field $field): View
+    public function show(Request $request, Field $field): View
     {
         abort_unless($field->isActive(), 404);
+
+        Booking::perbaruiStatus();
 
         $jamOperasional = sprintf(
             '%02d:00 – %02d:00',
             config('garuda.open_hour'),
             config('garuda.close_hour')
         );
+
+        $tanggal = $this->tanggalDipilih($request->query('tanggal'));
+        $pengguna = $request->user();
+
+        // tamu | pelanggan | dilarang (admin tidak boleh membuat booking)
+        $mode = $pengguna === null
+            ? 'tamu'
+            : ($pengguna->can('create', Booking::class) ? 'pelanggan' : 'dilarang');
 
         return view('fields.show', [
             'field' => $field,
@@ -78,6 +90,12 @@ class FieldController extends Controller
                 ['label' => 'Kapasitas', 'nilai' => $field->capacity],
                 ['label' => 'Jam Operasional', 'nilai' => $jamOperasional],
             ],
+            'mode' => $mode,
+            'tanggal' => $tanggal->toDateString(),
+            'tanggalLabel' => $tanggal->locale('id')->translatedFormat('l, j F Y'),
+            'hariIni' => Carbon::today()->toDateString(),
+            'slot' => Booking::petaJam($field, $tanggal),
+            'durasiOpsi' => [1, 2, 3],
         ]);
     }
 
@@ -85,5 +103,23 @@ class FieldController extends Controller
     private function pilihan(mixed $nilai, array $opsi): ?string
     {
         return is_string($nilai) && array_key_exists($nilai, $opsi) ? $nilai : null;
+    }
+
+    /** Tanggal dari ?tanggal=Y-m-d; tidak valid atau sudah lewat -> hari ini. */
+    private function tanggalDipilih(mixed $nilai): Carbon
+    {
+        $hariIni = Carbon::today();
+
+        if (! is_string($nilai) || ! Carbon::canBeCreatedFromFormat($nilai, 'Y-m-d')) {
+            return $hariIni;
+        }
+
+        $tanggal = Carbon::createFromFormat('!Y-m-d', $nilai);
+
+        if ($tanggal->format('Y-m-d') !== $nilai || $tanggal->lt($hariIni)) {
+            return $hariIni;
+        }
+
+        return $tanggal;
     }
 }

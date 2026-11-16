@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
@@ -11,6 +12,8 @@ Route::get('/lapangan', [FieldController::class, 'index'])->name('lapangan.index
 Route::get('/lapangan/{field}', [FieldController::class, 'show'])->name('lapangan.show');
 
 Route::middleware('auth')->group(function () {
+    Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
