@@ -16,21 +16,21 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <link rel="stylesheet" href="{{ asset('css/garuda.css') }}">
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col bg-gray-50">
+    <body>
+        <div class="halaman">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white border-b border-gray-200">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 font-heading">
+                <header class="header-halaman">
+                    <div class="wadah header-isi">
                         {{ $header }}
                     </div>
                 </header>
             @endisset
 
             <!-- Page Content -->
-            <main class="flex-1">
+            <main class="halaman-isi">
                 {{ $slot }}
             </main>
 
