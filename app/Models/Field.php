@@ -18,6 +18,12 @@ class Field extends Model
 
     public const TYPE_VINYL = 'vinyl';
 
+    public const TYPE_LABELS = [
+        self::TYPE_INTERLOCK => 'Interlock',
+        self::TYPE_RUMPUT => 'Rumput Sintetis',
+        self::TYPE_VINYL => 'Vinyl',
+    ];
+
     public const STATUS_AKTIF = 'aktif';
 
     public const STATUS_NONAKTIF = 'nonaktif';
@@ -40,5 +46,25 @@ class Field extends Model
     public function isActive(): bool
     {
         return $this->status === self::STATUS_AKTIF;
+    }
+
+    public function typeLabel(): string
+    {
+        return self::TYPE_LABELS[$this->type] ?? ucfirst((string) $this->type);
+    }
+
+    public function priceLabel(): string
+    {
+        return 'Rp '.number_format($this->price_per_hour, 0, ',', '.');
+    }
+
+    public function ratingLabel(): string
+    {
+        return number_format((float) $this->rating, 1, ',', '.');
+    }
+
+    public function imageUrl(): string
+    {
+        return asset($this->image ?: 'images/2-venue-interlock.jpg');
     }
 }
