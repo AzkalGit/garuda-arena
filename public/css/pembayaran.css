@@ -1,0 +1,378 @@
+/* Garuda Arena: halaman pembayaran /pembayaran/{kode}. Dimuat setelah garuda.css. */
+
+/* ---------- Halaman ---------- */
+.pembayaran-halaman {
+    width: 100%;
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* ---------- Langkah (Pilih jadwal / Pembayaran / Selesai) ---------- */
+.langkah-daftar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.25rem;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.langkah {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+}
+
+.langkah-selesai {
+    color: var(--hijau);
+}
+
+.langkah-sekarang {
+    color: #111827;
+}
+
+.langkah-angka {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    background-color: #e5e7eb;
+    color: #6b7280;
+}
+
+.langkah-selesai .langkah-angka,
+.langkah-sekarang .langkah-angka {
+    background-color: var(--hijau);
+    color: #ffffff;
+}
+
+/* ---------- Pesan galat ---------- */
+.pembayaran-galat {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #fecaca;
+    border-radius: 0.75rem;
+    background-color: #fef2f2;
+    font-size: 0.875rem;
+    color: #b91c1c;
+}
+
+/* ---------- Tata letak dua kolom ---------- */
+.pembayaran-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 2rem;
+}
+
+.pembayaran-utama {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ---------- Kartu (bagian utama dan ringkasan) ---------- */
+.kartu-bayar,
+.ringkasan {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--garis);
+    border-radius: 1rem;
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.kartu-bayar-kepala {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.judul-bayar {
+    margin: 0;
+    font-family: var(--font-judul);
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 700;
+}
+
+.catatan-bayar {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.lencana-waktu {
+    flex-shrink: 0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    background-color: #fef3c7;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #92400e;
+}
+
+/* ---------- Rekening ---------- */
+.rekening {
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    background-color: #dcfce7;
+    color: var(--hijau-tua);
+}
+
+.rekening-bank {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--hijau);
+}
+
+.rekening-nomor {
+    font-family: var(--font-judul);
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 800;
+}
+
+.rekening-nama {
+    font-size: 0.875rem;
+}
+
+/* ---------- Jumlah transfer ---------- */
+.jumlah-transfer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid var(--garis);
+}
+
+.jumlah-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.jumlah-nilai {
+    font-family: var(--font-judul);
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 800;
+    color: var(--hijau);
+}
+
+/* ---------- Form unggah ---------- */
+.form-bukti {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0;
+}
+
+.input-berkas {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--garis);
+    border-radius: 0.75rem;
+    background-color: var(--latar);
+    font-size: 0.875rem;
+    color: #111827;
+}
+
+.input-berkas::file-selector-button {
+    margin-right: 1rem;
+    padding: 0.5rem 1rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background-color: var(--hijau);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.input-berkas::file-selector-button:hover {
+    background-color: var(--hijau-tua);
+}
+
+.form-bukti-aksi {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.tombol-kirim {
+    padding: 0.625rem 1.25rem;
+    border: 0;
+    border-radius: 0.75rem;
+    background-color: var(--aksen);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.tombol-kirim:hover {
+    background-color: #c2410c;
+}
+
+/* ---------- Kotak status (verifikasi, dikonfirmasi, dibatalkan) ---------- */
+.kotak-status {
+    padding: 1.5rem;
+    border: 1px solid #bbf7d0;
+    border-radius: 1rem;
+    background-color: #f0fdf4;
+    font-size: 0.875rem;
+    color: #166534;
+}
+
+.kotak-status-gagal {
+    border-color: #fecaca;
+    background-color: #fef2f2;
+    color: #991b1b;
+}
+
+.kotak-status-judul {
+    margin: 0;
+    font-family: var(--font-judul);
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    font-weight: 700;
+}
+
+.kotak-status-isi {
+    margin: 0.25rem 0 0;
+}
+
+.kotak-status-berkas {
+    margin: 0.5rem 0 0;
+    font-size: 0.75rem;
+    color: var(--hijau);
+}
+
+.tombol-kembali {
+    display: inline-flex;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background-color: #b91c1c;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+/* ---------- Ringkasan booking ---------- */
+.ringkasan-judul {
+    margin: 0;
+    font-family: var(--font-judul);
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    font-weight: 700;
+}
+
+.ringkasan-foto {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 0.75rem;
+    background-color: #dcfce7;
+    object-fit: cover;
+}
+
+.ringkasan-daftar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.ringkasan-baris {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: #6b7280;
+}
+
+.ringkasan-baris dt,
+.ringkasan-baris dd {
+    margin: 0;
+}
+
+.ringkasan-baris dd {
+    text-align: right;
+    font-weight: 500;
+    color: #111827;
+}
+
+.ringkasan-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--garis);
+}
+
+.ringkasan-total-label {
+    font-weight: 700;
+}
+
+.ringkasan-total-nilai {
+    font-family: var(--font-judul);
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    font-weight: 800;
+    color: var(--hijau);
+}
+
+.ringkasan-kode {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    background-color: var(--latar);
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.ringkasan-kode strong {
+    color: #111827;
+}
+
+/* ---------- Layar >= 640px ---------- */
+@media (min-width: 640px) {
+    .pembayaran-halaman {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+/* ---------- Layar >= 1024px ---------- */
+@media (min-width: 1024px) {
+    .pembayaran-halaman {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    .pembayaran-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .pembayaran-utama {
+        grid-column: span 2 / span 2;
+    }
+
+    .ringkasan {
+        position: sticky;
+        top: 6rem;
+    }
+}
