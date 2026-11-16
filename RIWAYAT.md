@@ -28,3 +28,14 @@
 - Tes: `KatalogTest` (11 tes baru); `ExampleTest` diberi `RefreshDatabase`; 3 tes Auth disesuaikan ke `home`. Hasil: **46 passed (129 assertions)**.
 - Belum teruji: tampilan di browser, uji mutasi.
 - Catatan alat: di terminal VS Code, `git push` bisa menggantung karena `GIT_ASKPASS` VS Code. Solusi: matikan `git.useIntegratedAskPass`, atau awali dengan `GIT_ASKPASS=`. `credential.helper store` sudah aktif; token klasik GitHub kedaluwarsa 16 Des 2026.
+
+## Langkah B2: Detail lapangan (16 Nov 2026)
+
+- Rute `GET /lapangan/{field}` (`lapangan.show`), metode `FieldController::show()`. Lapangan `nonaktif` memberi 404 (`abort_unless($field->isActive(), 404)`). Jam operasional diambil dari `config('garuda.open_hour'/'close_hour')`.
+- View baru `fields/show.blade.php`: breadcrumb di slot header, foto, badge jenis dan rating, lokasi, deskripsi, spesifikasi (jenis, ukuran, kapasitas, jam operasional), fasilitas, kartu harga. Tombol "Booking Sekarang" sengaja nonaktif (placeholder untuk Langkah C).
+- `components/field-card` kini menaut ke `route('lapangan.show', $field)` (sebelumnya `url('/lapangan/'.$id)`).
+- Tes baru `DetailLapanganTest` (5 tes): tamu melihat detail aktif, nonaktif 404, id tidak ada 404, kartu aktif menaut ke detail, kartu nonaktif tanpa tautan. Hasil: <<ISI: N passed (M assertions)>>.
+- Tidak dibawa dari prototipe: galeri 3 foto, ulasan, "Lapangan Serupa", simulasi slot hash 30%, JavaScript detail.
+- Belum teruji di browser: tata letak dua kolom, kartu harga, layar sempit. Uji mutasi `abort_unless`: <<belum dilakukan / hasil>>.
+- Commit: <<ISI hash>>.
+- Catatan prototipe yang dipakai di Langkah C: slot mulai 08–22; durasi 1, 2, 3 jam; slot yang sudah lewat hari ini nonaktif; tanggal minimal hari ini; tautan booking membawa id, tanggal, jam, durasi.
