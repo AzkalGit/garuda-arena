@@ -70,3 +70,8 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - Teks, rute, dan perilaku tidak berubah. Tidak ada tes yang memeriksa nama kelas.
 - Tes: 87 passed (293 assertions), tidak berubah.
 - Belum: telusur browser rinci (beranda, 4/2/1 kolom, filter, keadaan kosong, lapangan nonaktif). Blok `@media` akhir `garuda.css` sebelumnya tidak tertutup; sudah ditutup.
+
+## R3a: detail lapangan dengan kelas sendiri (7b3ba10)
+- fields/show.blade.php ditulis ulang tanpa Tailwind/style; CSS di public/css/detail.css (444 baris), dimuat lewat slot head.
+- Kotak session('booking_sukses') yang mati dihapus.
+- Tes: 87 passed (293 assertions). Telusur browser: belum dilaporkan.
