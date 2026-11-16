@@ -16,3 +16,15 @@
 - Tes: `FondasiTest` (8 tes). Total **35 passed**.
 - Belum: uji di browser, uji mutasi (belum ada otorisasi atau cek bentrok).
 - Catatan: booking demo `menunggu_verifikasi` punya `proof_name` tapi `proof_path` kosong (Langkah E harus menangani ini). Booking demo `menunggu_pembayaran` kedaluwarsa 1 jam setelah seeder; jalankan seeder ulang sebelum demo.
+
+## Langkah B1: Katalog (16 Nov 2026) · commit 1c0ae0a
+
+- Rute baru: `/` (nama `home`) dan `/lapangan` (nama `lapangan.index`). Rute `/dashboard` dan view `dashboard` dan `welcome` dihapus; semua redirect setelah login/registrasi/verifikasi diarahkan ke `home`.
+- `HomeController` (invokable): 3 lapangan aktif unggulan, jumlah lapangan aktif, jam buka/tutup dan batas bayar dari `config/garuda.php`.
+- `FieldController@index`: filter jenis, harga, dan urutan **di server** lewat parameter URL (`jenis`, `harga`, `urut`; nama sama dengan prototipe). Nilai tidak dikenal diabaikan.
+- `Field`: tambahan `TYPE_LABELS`, `typeLabel()`, `priceLabel()`, `ratingLabel()`, `imageUrl()`.
+- View: `home`, `fields/index`, komponen `field-card`, `layouts/footer`; `layouts/navigation` ditulis ulang (aman untuk tamu, menu per peran, `data-peran` di tombol pengguna); `layouts/app` memuat footer.
+- Tidak dibawa dari prototipe: "Cek Ketersediaan Cepat", angka palsu (15K+ pemain, rating 4.9), modal booking, ikon media sosial.
+- Tes: `KatalogTest` (11 tes baru); `ExampleTest` diberi `RefreshDatabase`; 3 tes Auth disesuaikan ke `home`. Hasil: **46 passed (129 assertions)**.
+- Belum teruji: tampilan di browser, uji mutasi.
+- Catatan alat: di terminal VS Code, `git push` bisa menggantung karena `GIT_ASKPASS` VS Code. Solusi: matikan `git.useIntegratedAskPass`, atau awali dengan `GIT_ASKPASS=`. `credential.helper store` sudah aktif; token klasik GitHub kedaluwarsa 16 Des 2026.
