@@ -29,7 +29,7 @@
         </div>
 
         @if ($field->isActive())
-            <a href="{{ url('/lapangan/'.$field->id) }}" class="shrink-0 bg-green-700 hover:bg-green-800 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors">Lihat Detail</a>
+            <a href="{{ route('lapangan.show', $field) }}" class="shrink-0 bg-green-700 hover:bg-green-800 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors">Lihat Detail</a>
         @else
             <span aria-disabled="true" class="shrink-0 bg-gray-200 text-gray-500 font-semibold text-sm px-4 py-2.5 rounded-xl cursor-not-allowed">Tidak Tersedia</span>
         @endif

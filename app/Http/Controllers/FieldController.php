@@ -59,6 +59,28 @@ class FieldController extends Controller
         ]);
     }
 
+    public function show(Field $field): View
+    {
+        abort_unless($field->isActive(), 404);
+
+        $jamOperasional = sprintf(
+            '%02d:00 – %02d:00',
+            config('garuda.open_hour'),
+            config('garuda.close_hour')
+        );
+
+        return view('fields.show', [
+            'field' => $field,
+            'fasilitas' => collect($field->facilities)->all(),
+            'spesifikasi' => [
+                ['label' => 'Jenis Lantai', 'nilai' => $field->typeLabel()],
+                ['label' => 'Ukuran', 'nilai' => $field->size],
+                ['label' => 'Kapasitas', 'nilai' => $field->capacity],
+                ['label' => 'Jam Operasional', 'nilai' => $jamOperasional],
+            ],
+        ]);
+    }
+
     /** Nilai query hanya dipakai bila berupa teks dan ada di daftar pilihan. */
     private function pilihan(mixed $nilai, array $opsi): ?string
     {
