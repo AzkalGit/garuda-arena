@@ -39,3 +39,17 @@
 - Belum teruji di browser: tata letak dua kolom, kartu harga, layar sempit. Uji mutasi `abort_unless`: <<belum dilakukan / hasil>>.
 - Commit: <<ISI hash>>.
 - Catatan prototipe yang dipakai di Langkah C: slot mulai 08–22; durasi 1, 2, 3 jam; slot yang sudah lewat hari ini nonaktif; tanggal minimal hari ini; tautan booking membawa id, tanggal, jam, durasi.
+
+## Langkah C — Booking + cek bentrok (16 Nov 2026)
+
+**Commit:** <<HASH C>> · **Tes:** 73 passed (228 assertions) = 51 lama + 22 `BookingTest`.
+
+- `Booking::createPending()`: `DB::transaction` + `lockForUpdate` pada baris lapangan. Cek lapangan aktif, jam operasional, jam sudah lewat, dan bentrok (`start < end_lain` dan `start_lain < end`, status bukan `dibatalkan`). Kode `GA-ddmm-XXXX` unik, harga disalin, `expires_at` = sekarang + 60 menit.
+- `Booking::perbaruiStatus()`: `menunggu_pembayaran` yang lewat `expires_at` menjadi `dibatalkan` ("Waktu pembayaran habis"). Dipanggil di `FieldController::show()` dan `createPending()`.
+- `Booking::petaJam()`: slot 08–22 per lapangan dan tanggal (Terisi, Lewat, tersedia). Hasilnya dipakai view.
+- `StoreBookingRequest` (validasi + otorisasi lewat `BookingPolicy::create`: admin 403). `BookingController@store` (`booking.store`, di grup `auth`).
+- `fields/show`: form tanggal (GET `?tanggal=`), radio jam dan durasi 1-3 jam, tanpa JavaScript. Tanggal tidak valid atau lewat diganti hari ini. Mode tampilan: tamu ("Masuk untuk Booking"), pelanggan, admin (pesan).
+- Setelah booking sukses: kembali ke detail lapangan dengan kotak sukses (flash `booking_sukses`). Halaman pembayaran menyusul di D.
+- Pint juga merapikan `ExampleTest.php` (baris kosong akhir file).
+- **Belum dilakukan:** uji mutasi (dilewati atas keputusan pemilik), telusur browser (tampilan `fields/show`, alur klik per peran).
+- Catatan: `lockForUpdate` tidak berefek di SQLite (basis tes), jadi balapan dua klik hanya terbukti lewat penalaran.
