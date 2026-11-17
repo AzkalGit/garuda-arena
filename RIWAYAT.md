@@ -118,3 +118,11 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - Diputuskan di chat: laporan tidak butuh tabel baru (dihitung dari `bookings.date`); diagram SVG dihitung di server (tanpa paket JS); CSV pemisah `;` + BOM UTF-8.
 - `admin-laporan.js` prototipe hanya memakai bulan berjalan; tab minggu/bulan/tahun/kustom dibuat baru.
 - Belum dicek di browser oleh Claude; jawaban pemilik atas pertanyaan pola diagram belum ada (default dipakai).
+## G1b: Navbar publik dan restyle panel admin (17 Nov 2026)
+
+- Penyebab tampilan admin polos: `admin-layout.css` kosong, sedangkan CSS sidebar/topbar tertempel di `admin-booking.css` dan CSS tabel/tombol/kotak cari tidak ada. CSS dipisah ulang: `admin-layout.css` = sidebar, menu geser, topbar, avatar; `admin-booking.css` = kotak cari, tabel, tombol aksi.
+- Sidebar ala prototipe: logo bulat hijau, ikon SVG inline per menu, menu aktif = kotak hijau membulat, catatan kaki "Tugas kuliah PBW – Kelompok 6". Topbar: judul halaman di kiri, avatar inisial + nama di kanan.
+- Navbar publik: tautan "Panel Admin" dan "Kelola Lapangan" diganti satu tombol oranye `.tombol-panel-admin` (ke `admin.dashboard` bila rutenya ada, kalau tidak ke `admin.bookings.index`); juga di menu mobile. Gayanya di akhir `garuda.css`.
+- Tes baru `NavbarAdminTest` (2 tes). Total 137 passed.
+- Pelajaran: setelah menempel CSS, selalu cek `git status --short` (file harus ` M`) dan `grep -c` pada satu kelas penanda.
+- Belum: kartu statistik di Kelola Lapangan, filter jenis lapangan, restyle form lapangan lebih jauh.
