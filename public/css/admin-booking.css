@@ -1,203 +1,168 @@
-/* Garuda Arena: kerangka panel admin (sidebar + topbar). Dimuat setelah garuda.css. */
+/* Garuda Arena: panel admin, tabel, tombol aksi, dan kotak cari. Dimuat setelah garuda.css dan riwayat.css. */
 
-.admin-halaman {
+/* ---------- Kotak cari ---------- */
+.admin-cari {
     display: flex;
-    min-height: 100vh;
-    background-color: var(--latar);
-    font-family: var(--font-isi);
-}
-
-/* ---------- Sidebar ---------- */
-.admin-sisi {
-    display: none;
-    flex-direction: column;
-    flex-shrink: 0;
-    width: 16rem;
-    height: 100vh;
-    position: sticky;
-    top: 0;
-    overflow-y: auto;
-    background-color: var(--hijau-tua);
-}
-
-.admin-sisi-isi {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
-    padding: 1.25rem 0.75rem;
-}
-
-.admin-merek {
-    display: block;
+    gap: 0.75rem;
     margin-bottom: 1.5rem;
-    padding: 0 0.75rem;
-    text-decoration: none;
 }
 
-.admin-merek-nama {
-    display: block;
-    font-family: var(--font-judul);
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: #ffffff;
-}
-
-.admin-merek-sub {
-    display: inline-block;
-    margin-top: 0.25rem;
-    padding: 0.125rem 0.5rem;
-    border-radius: 999px;
-    background-color: var(--aksen);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    color: #ffffff;
-}
-
-.admin-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.admin-menu-link {
-    display: block;
-    width: 100%;
-    padding: 0.625rem 0.75rem;
-    border: 0;
-    border-left: 4px solid transparent;
-    border-radius: 0.5rem;
-    background-color: transparent;
+.admin-cari-isi {
+    flex: 1;
+    min-width: 0;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--garis);
+    border-radius: 0.75rem;
+    background-color: #ffffff;
     font-family: var(--font-isi);
     font-size: 0.875rem;
-    font-weight: 500;
-    text-align: left;
-    text-decoration: none;
-    color: #dcfce7;
+}
+
+.admin-cari-isi:focus {
+    outline: 2px solid var(--hijau-200);
+    border-color: var(--hijau);
+}
+
+.admin-tombol-cari {
+    padding: 0.75rem 1.25rem;
+    border: 0;
+    border-radius: 0.75rem;
+    background-color: var(--hijau);
+    font-family: var(--font-isi);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ffffff;
     cursor: pointer;
 }
 
-.admin-menu-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
-}
-
-.admin-menu-link.aktif {
-    border-left-color: var(--aksen);
-    background-color: rgba(255, 255, 255, 0.16);
-    font-weight: 600;
-    color: #ffffff;
-}
-
-.admin-sisi-bawah {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    margin-top: auto;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-/* ---------- Menu geser (layar sempit) ---------- */
-.admin-menu-mobile {
-    display: flex;
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 60;
-}
-
-.admin-sisi-mobile {
-    width: 16rem;
-    max-width: 80%;
-    overflow-y: auto;
+.admin-tombol-cari:hover {
     background-color: var(--hijau-tua);
 }
 
-.admin-latar {
-    flex: 1;
-    border: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    cursor: pointer;
-}
-
-/* ---------- Area utama ---------- */
-.admin-utama {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    min-width: 0;
-}
-
-.admin-atas {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.25rem;
-    border-top: 3px solid var(--aksen);
-    border-bottom: 1px solid var(--garis);
-    background-color: #ffffff;
-}
-
-.admin-tombol-menu {
-    padding: 0.375rem;
+/* ---------- Tabel ---------- */
+.admin-tabel-bungkus {
+    overflow-x: auto;
     border: 1px solid var(--garis);
-    border-radius: 0.5rem;
+    border-radius: 1rem;
     background-color: #ffffff;
-    color: #111827;
-    cursor: pointer;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-.admin-ikon-menu {
-    display: block;
-    width: 1.5rem;
-    height: 1.5rem;
+.admin-tabel {
+    width: 100%;
+    min-width: 62rem;
+    border-collapse: collapse;
+    font-size: 0.875rem;
 }
 
-.admin-atas-judul {
-    font-family: var(--font-judul);
-    font-size: 0.9375rem;
+.admin-tabel th {
+    padding: 0.75rem 1.25rem;
+    background-color: var(--latar);
     font-weight: 600;
-    color: var(--hijau-tua);
+    text-align: left;
+    color: var(--abu-500);
 }
 
-.admin-atas-pengguna {
+.admin-tabel td {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--garis);
+    vertical-align: middle;
+}
+
+.admin-tabel tbody tr:hover {
+    background-color: var(--latar);
+}
+
+.admin-kode {
+    font-weight: 600;
+    color: var(--teks);
+}
+
+.admin-kecil {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--abu-500);
+}
+
+.admin-kosong {
+    padding: 3rem 1.5rem;
+    text-align: center;
+    color: var(--abu-500);
+}
+
+/* ---------- Tombol aksi ---------- */
+.admin-aksi {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem;
-    margin-left: auto;
-    font-size: 0.875rem;
-    color: #374151;
 }
 
-.admin-isi {
-    flex: 1;
-    padding: 1.25rem;
+.admin-aksi form {
+    margin: 0;
 }
 
-.admin-header {
-    margin-bottom: 1rem;
+.admin-tombol-bukti,
+.admin-tombol-setuju,
+.admin-tombol-tolak {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem 0.875rem;
+    border-radius: 0.5rem;
+    font-family: var(--font-isi);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-@media (min-width: 768px) {
-    .admin-sisi {
-        display: flex;
-    }
+.admin-tombol-bukti {
+    border: 1px solid var(--garis);
+    background-color: #ffffff;
+    color: var(--teks);
+}
 
-    .admin-menu-mobile {
-        display: none !important;
-    }
+.admin-tombol-bukti:hover {
+    background-color: var(--latar);
+}
 
-    .admin-tombol-menu {
-        display: none;
-    }
+.admin-tombol-setuju {
+    border: 1px solid var(--hijau);
+    background-color: var(--hijau);
+    color: #ffffff;
+}
 
-    .admin-atas {
-        padding: 0.875rem 2rem;
-    }
+.admin-tombol-setuju:hover {
+    border-color: var(--hijau-tua);
+    background-color: var(--hijau-tua);
+}
 
-    .admin-isi {
-        padding: 2rem;
-    }
+.admin-tombol-tolak {
+    border: 1px solid #fecaca;
+    background-color: #ffffff;
+    color: #b91c1c;
+}
+
+.admin-tombol-tolak:hover {
+    background-color: #fef2f2;
+}
+
+.admin-form-tolak {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin-isi-alasan {
+    width: 10rem;
+    padding: 0.4rem 0.625rem;
+    border: 1px solid var(--garis);
+    border-radius: 0.5rem;
+    font-family: var(--font-isi);
+    font-size: 0.75rem;
+}
+
+.admin-isi-alasan:focus {
+    outline: 2px solid #fecaca;
+    border-color: #dc2626;
 }

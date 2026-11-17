@@ -780,3 +780,18 @@ img {
     .grid-keunggulan { grid-template-columns: repeat(4, 1fr); }
 }
 
+/* Tombol Panel Admin di navbar publik */
+.tombol-panel-admin {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background-color: var(--aksen);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.tombol-panel-admin:hover {
+    background-color: var(--aksen-tua);
+}

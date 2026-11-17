@@ -39,8 +39,8 @@
                     </button>
                     <span class="admin-atas-judul">Panel Admin</span>
                     <span class="admin-atas-pengguna">
-                        {{ auth()->user()->name }}
-                        <span class="lencana-admin">Admin</span>
+                        <span class="admin-avatar">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}</span>
+                        <span class="admin-atas-nama">{{ auth()->user()->name }}</span>
                     </span>
                 </header>
 

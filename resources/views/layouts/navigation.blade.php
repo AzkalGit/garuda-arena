@@ -9,11 +9,13 @@
     if (auth()->check() && ! auth()->user()->isAdmin() && Route::has('riwayat.index')) {
         $menu[] = ['Riwayat Booking', route('riwayat.index'), request()->routeIs('riwayat.*')];
     }
-    if (auth()->check() && auth()->user()->isAdmin() && Route::has('admin.bookings.index')) {
-        $menu[] = ['Panel Admin', route('admin.bookings.index'), request()->routeIs('admin.bookings.*')];
-    }
-    if (auth()->check() && auth()->user()->isAdmin() && Route::has('admin.fields.index')) {
-        $menu[] = ['Kelola Lapangan', route('admin.fields.index'), request()->routeIs('admin.fields.*')];
+    $urlPanel = null;
+    if (auth()->check() && auth()->user()->isAdmin()) {
+        if (Route::has('admin.dashboard')) {
+            $urlPanel = route('admin.dashboard');
+        } elseif (Route::has('admin.bookings.index')) {
+            $urlPanel = route('admin.bookings.index');
+        }
     }
 @endphp
 
@@ -40,8 +42,10 @@
                 @endguest
 
                 @auth
-                    <x-dropdown align="right" width="48">
-                        <x-slot name="trigger">
+                    @if ($urlPanel)
+                        <a href="{{ $urlPanel }}" class="tombol-panel-admin">Panel Admin</a>
+                    @endif
+                    <x-dropdown align="right" width="48">                        <x-slot name="trigger">
                             <button data-peran="{{ auth()->user()->role }}" class="tombol-pengguna">
                                 <span>{{ auth()->user()->name }}</span>
                                 @if (auth()->user()->isAdmin())
@@ -97,6 +101,9 @@
                     <div class="pengguna-nama">{{ auth()->user()->name }}</div>
                     <div class="pengguna-email">{{ auth()->user()->email }}</div>
                 </div>
+                @if ($urlPanel)
+                    <a href="{{ $urlPanel }}" class="menu-mobile-link warna-aksen">Panel Admin</a>
+                @endif
                 <a href="{{ route('profile.edit') }}" class="menu-mobile-link">Profil</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

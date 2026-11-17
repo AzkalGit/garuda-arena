@@ -1,0 +1,264 @@
+/* Garuda Arena: kerangka panel admin (sidebar + topbar). Dimuat setelah garuda.css. */
+
+.admin-halaman {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--latar);
+    font-family: var(--font-isi);
+}
+
+/* ---------- Sidebar ---------- */
+.admin-sisi {
+    display: none;
+    flex-direction: column;
+    flex-shrink: 0;
+    width: 16rem;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    background-color: var(--hijau-tua);
+}
+
+.admin-sisi-isi {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: 1.25rem;
+}
+
+.admin-merek {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    text-decoration: none;
+}
+
+.admin-merek-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    background-color: var(--hijau);
+    color: #ffffff;
+}
+
+.admin-merek-teks {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-merek-nama {
+    font-family: var(--font-judul);
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.admin-merek-sub {
+    font-size: 0.75rem;
+    color: rgba(187, 247, 208, 0.7);
+}
+
+.admin-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.admin-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 0;
+    border-radius: 0.75rem;
+    background-color: transparent;
+    font-family: var(--font-isi);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: left;
+    text-decoration: none;
+    color: rgba(220, 252, 231, 0.85);
+    cursor: pointer;
+}
+
+.admin-menu-link:hover {
+    background-color: rgba(22, 101, 52, 0.7);
+    color: #ffffff;
+}
+
+.admin-menu-link.aktif {
+    background-color: var(--hijau);
+    color: #ffffff;
+}
+
+.admin-menu-ikon {
+    display: block;
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.admin-sisi-bawah {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.admin-catatan {
+    margin: 0.75rem 0 0;
+    padding: 0 0.5rem;
+    font-size: 0.75rem;
+    color: rgba(187, 247, 208, 0.7);
+}
+
+/* ---------- Menu geser (layar sempit) ---------- */
+.admin-menu-mobile {
+    display: flex;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 60;
+}
+
+.admin-sisi-mobile {
+    width: 18rem;
+    max-width: 85%;
+    overflow-y: auto;
+    background-color: var(--hijau-tua);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.admin-latar {
+    flex: 1;
+    border: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+}
+
+/* ---------- Area utama ---------- */
+.admin-utama {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.admin-atas {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: 4rem;
+    padding: 0 1.25rem;
+    border-bottom: 1px solid var(--garis);
+    background-color: #ffffff;
+}
+
+.admin-tombol-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 1px solid var(--garis);
+    border-radius: 0.75rem;
+    background-color: #ffffff;
+    color: var(--hijau-tua);
+    cursor: pointer;
+}
+
+.admin-ikon-menu {
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.admin-atas-judul {
+    font-family: var(--font-judul);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--hijau-tua);
+}
+
+.admin-atas-pengguna {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.admin-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    background-color: var(--hijau);
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.admin-atas-nama {
+    display: none;
+}
+
+.admin-isi {
+    flex: 1;
+    padding: 1.25rem;
+}
+
+.admin-header {
+    margin-bottom: 1rem;
+}
+
+/* Halaman admin memakai kelas .riwayat-halaman dari riwayat.css: hilangkan jarak gandanya. */
+.admin-isi .riwayat-halaman {
+    max-width: 80rem;
+    padding: 0;
+}
+
+@media (min-width: 640px) {
+    .admin-atas-nama {
+        display: inline;
+    }
+}
+
+@media (min-width: 768px) {
+    .admin-sisi {
+        display: flex;
+    }
+
+    .admin-menu-mobile {
+        display: none !important;
+    }
+
+    .admin-tombol-menu {
+        display: none;
+    }
+
+    .admin-atas {
+        padding: 0 2rem;
+    }
+
+    .admin-isi {
+        padding: 2rem;
+    }
+}
