@@ -96,3 +96,18 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - `payments/show.blade.php`: pada tahap `bayar`, bila `rejection_reason` terisi, tampil kotak `.pembayaran-galat` berisi "Bukti pembayaran sebelumnya ditolak" dan alasannya. Tanpa CSS baru.
 - `PaymentTest`: +2 tes (alasan tampil; tidak tampil bila belum pernah ditolak).
 - Belum dicek browser.
+## Langkah E2 — Admin kelola lapangan (17 Nov 2026)
+
+**Hasil:** admin dapat melihat daftar lapangan (filter `?status=`, cari `?q=` pada nama/lokasi), menambah, mengubah, dan mengaktifkan/menonaktifkan lapangan. Tes: 132 passed (119 + 13 tes `AdminFieldTest`).
+
+**File baru:** `Admin/FieldController` (index, create, store, edit, update, status), `FieldRequest`, `FieldPolicy` (`kelola`, `ubah`), `admin/fields/index|form.blade.php`, `public/css/admin-lapangan.css`, `tests/Feature/AdminFieldTest.php`.
+**File diubah:** `Field.php` (`statusLabel()`, `fasilitasTeks()`, `gambarUnggahan()`), `routes/web.php` (6 rute `admin.fields.*`), `layouts/navigation.blade.php` (menu Kelola Lapangan; Panel Admin hanya menyala di `admin.bookings.*`), `KatalogTest.php` (admin dicari lewat `role`).
+
+**Keputusan:**
+- Menonaktifkan lapangan tidak membatalkan booking yang ada; hanya menutup pemesanan baru.
+- Foto: JPG/PNG maks. 2 MB, disk `public` (`storage/lapangan/`), dicatat sebagai `storage/...`; tanpa foto memakai `images/2-venue-interlock.jpg`. Foto unggahan lama dihapus saat diganti; gambar bawaan tidak pernah dihapus. Butuh `php artisan storage:link`.
+- Fasilitas: teks berkoma, dirapikan, tanpa duplikat, maks. 12 butir @ 40 karakter. Rating dan jumlah ulasan baru = 0 dan tidak bisa diubah dari form.
+- Nama lapangan unik; tarif bilangan bulat Rp10.000–Rp5.000.000.
+- Tidak ada hapus lapangan (hanya nonaktif).
+
+**Belum teruji:** tampilan di browser (daftar cek di percakapan E2), unggah foto sungguhan, symlink storage.

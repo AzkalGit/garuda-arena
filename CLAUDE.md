@@ -1,7 +1,7 @@
 # CLAUDE.md — Garuda Arena (Laravel)
 
 > Serah-terima antar sesi Claude (versi ringkas). Riwayat langkah selesai ada di `RIWAYAT.md` (minta bagian tertentu bila perlu).
-> Terakhir diperbarui: **17 Nov 2026** · Tes: **119 passed** (117 + 2 tes E1b; ganti bila hasil pemilik berbeda) · Laravel 13 + Breeze (Blade).
+> Terakhir diperbarui: **17 Nov 2026** · Tes: **132 passed** (ganti bila hasil pemilik berbeda) · Laravel 13 + Breeze (Blade).
 > **Target:** demo presentasi UAS (**23 atau 26 Nov 2026**; rencanakan 23 Nov).
 
 ## 0. Cara kerja dan aturan
@@ -12,7 +12,7 @@ Pemilik **bukan programmer mahir** (vibecoder): jelaskan perintah dengan jelas, 
 
 1. **Mulai dengan `git status --short` dan `ls`.** Kode di repo lebih benar daripada berkas ini.
 2. **Jangan mengarang isi file yang belum dilihat.** Minta tempel dulu. Berkas bersama (`routes/web.php`, Policy, layout, model) jangan ditimpa utuh sebelum dilihat versi terbarunya (Pint mengubah kode yang tersimpan).
-3. **Satu langkah per percakapan.** Untuk tes cukup baris `Tests: N passed` kecuali ada yang gagal. File panjang: `grep -n "function"` dulu. "Cari-ganti" hanya bila teks lama ditampilkan lengkap, unik, dan satu blok jelas; selain itu file utuh.
+3. **Satu langkah per percakapan.** Untuk tes cukup baris `Tests: N passed` kecuali ada yang gagal. File panjang: `grep -n "function"` dulu. "Cari-ganti" hanya bila teks lama ditampilkan lengkap, unik, dan satu blok jelas; selain itu file utuh. Perintah `git diff` selalu pakai `git --no-pager`.
 4. **Serahan memuat:** (a) file BARU/UBAH, (b) perintah untuk pemilik, (c) yang sudah diuji dan caranya, (d) yang belum bisa diuji. Pemilik tidak pernah menempel `.env`, `vendor/`, `node_modules/`, `*.sqlite`, `*.log`, kata sandi, atau token.
 5. **Jujur soal pengujian:** jangan klaim "sudah dicoba di browser" bila hanya tes otomatis. **View yang belum dijalankan = belum teruji.** Hindari logika rumit di view; siapkan data di controller.
 6. **Tiap aturan baru wajib ada tesnya**; tes lama tetap lulus. Tes "risky" (tanpa assertion) dianggap belum lulus. Saat mengubah perilaku, cari tes lama yang terdampak dengan `grep` pada teks view *dan* nama rute/flash; tes yang memeriksa perilaku yang sengaja diganti diubah.
@@ -35,7 +35,7 @@ Pemilik **bukan programmer mahir** (vibecoder): jelaskan perintah dengan jelas, 
 
 ## 1. Ringkasan, stack, repo
 
-- **Apa:** website booking lapangan futsal **Garuda Arena** (tugas kuliah PBW, Kelompok 6). Pelanggan memilih lapangan, jam, durasi, membayar dengan unggah bukti transfer; Admin memverifikasi.
+- **Apa:** website booking lapangan futsal **Garuda Arena** (tugas kuliah PBW, Kelompok 6). Pelanggan memilih lapangan, jam, durasi, membayar dengan unggah bukti transfer; Admin memverifikasi dan mengelola lapangan.
 - **Stack:** Laravel 13, PHP ≥ 8.4, Breeze (Blade + Alpine), **Tailwind v3 via PostCSS** (`@tailwindcss/vite` v4 tidak dipakai), Vite. Tes: SQLite di memori. Locale `id`, timezone `Asia/Jakarta`.
 - **Lingkungan pemilik:** Linux, PHP 8.4, MariaDB (db `garudaarena`, user `garuda_user`, `DB_CONNECTION=mariadb`), Node. Dua terminal: `npm run dev` dan `php artisan serve` (`http://127.0.0.1:8000`).
 - **Repo:** `https://github.com/AzkalGit/garuda-arena`, folder `~/Documents/Kuliah/sem3/PBW/garuda-arena`. `main` = prototipe statis lama, **jangan disentuh**. Kerja di **`fitur/laravel-fondasi`**. Prototipe lama di `prototipe-statis/` (halaman di `prototipe-statis/webnya/`, termasuk `admin-lapangan.html`, `admin-dashboard.html`, `admin-laporan.html` dan `js/`). Sebelum `git add -A`, cek `git status` (jangan sampai `.env` ikut).
@@ -44,6 +44,7 @@ Pemilik **bukan programmer mahir** (vibecoder): jelaskan perintah dengan jelas, 
 composer install
 cp .env.example .env && php artisan key:generate     # isi DB_*
 php artisan migrate:fresh --seed                     # MENGHAPUS isi DB lokal
+php artisan storage:link                             # wajib agar foto lapangan unggahan tampil
 npm install && npm run dev
 php artisan test
 vendor/bin/pint <file yang diubah>
@@ -57,9 +58,9 @@ php artisan optimize:clear
 - **Peran:** `role` sengaja **tidak** di `#[Fillable]` `User`; registrasi publik selalu `pelanggan`. Ubah peran lewat `forceFill`.
 - **Uang** = bilangan bulat rupiah. Waktu booking: `date`, `start_hour` (8–22), `duration` (1–3 jam); jam selesai = `start_hour + duration` ≤ 23 (`Booking::endHour()`). Konfigurasi di `config/garuda.php` (`open_hour=8`, `close_hour=23`, `pay_window_minutes=60`).
 - **Tanggal dan jam hanya lewat Carbon.** Nama bulan di view: `->locale('id')->translatedFormat(...)`. Tes membekukan waktu dengan `Carbon::setTestNow(...)`.
-- **Format tampilan lewat metode model** (`Field::priceLabel()`, `ratingLabel()`, `typeLabel()`, `imageUrl()`, `isActive()`; `Booking::jamLabel()`, `totalLabel()`, `tanggalLabel()`, `tarifLabel()`, `sisaMenit()`, `bisaDibayar()`, `bisaDiverifikasi()`, `statusLabel()`, `statusKelas()`, `Booking::daftarStatus()`), bukan logika di view. Filter/urutan/pencarian lewat parameter URL yang divalidasi di controller (nilai tak dikenal diabaikan).
-- **Bukti bayar** di disk privat (`local`, `bukti-bayar/`), tidak pernah `public`; tipe dan ukuran divalidasi di server; unduh lewat rute yang dicek hak.
-- Layout `app` memuat `layouts.navigation` dan `layouts.footer`, slot `header` dan `head` opsional. Tombol kirim bukti (`.tombol-kirim`), kembali (`.tombol-kembali`), dan kotak galat/pemberitahuan (`.pembayaran-galat`) ada di `pembayaran.css`. Lencana status (`.lencana-status`, `.status-*`), `.filter-status`, `.filter-tombol`, `.riwayat-pesan`, `.riwayat-galat` ada di `riwayat.css` dan dipakai ulang halaman admin.
+- **Format tampilan lewat metode model** (`Field::priceLabel()`, `ratingLabel()`, `typeLabel()`, `imageUrl()`, `isActive()`, `statusLabel()`, `fasilitasTeks()`, `gambarUnggahan()`; `Booking::jamLabel()`, `totalLabel()`, `tanggalLabel()`, `tarifLabel()`, `sisaMenit()`, `bisaDibayar()`, `bisaDiverifikasi()`, `statusLabel()`, `statusKelas()`, `Booking::daftarStatus()`), bukan logika di view. Filter/urutan/pencarian lewat parameter URL yang divalidasi di controller (nilai tak dikenal diabaikan).
+- **Bukti bayar** di disk privat (`local`, `bukti-bayar/`), tidak pernah `public`; tipe dan ukuran divalidasi di server; unduh lewat rute yang dicek hak. **Foto lapangan** di disk `public` (`storage/lapangan/`), dicatat sebagai `storage/...`; gambar bawaan `images/...` tidak pernah dihapus.
+- Layout `app` memuat `layouts.navigation` dan `layouts.footer`, slot `header` dan `head` opsional. Tombol kirim bukti (`.tombol-kirim`), kembali (`.tombol-kembali`), dan kotak galat/pemberitahuan (`.pembayaran-galat`) ada di `pembayaran.css`. Lencana status (`.lencana-status`, `.status-*`), `.filter-status`, `.filter-tombol`, `.riwayat-pesan`, `.riwayat-galat` ada di `riwayat.css`; tabel/tombol admin (`.admin-tabel`, `.admin-tombol-*`, `.admin-cari`) di `admin-booking.css`; keduanya dipakai ulang halaman admin lain.
 - Jangan simpan rahasia di repo atau percakapan. Seeder memuat kata sandi demo sementara (`DEMO_PASSWORD`): ganti sendiri, catat di luar repo.
 
 ## 3. Struktur
@@ -67,15 +68,16 @@ php artisan optimize:clear
 ```
 app/Models/            User, Field, Booking                                          (ADA)
 app/Http/Controllers/  Home, Field, Booking{store}, Payment{show,store}, History{index,batal},
-                       Admin/Booking{index,bukti,setujui,tolak}                      (ADA); Admin/{Field,Dashboard} (rencana)
-app/Http/Requests/     StoreBookingRequest, SubmitProofRequest, RejectBookingRequest (ADA); FieldRequest (rencana)
-app/Policies/          BookingPolicy{viewAny,create,view,pay,cancel,kelola,verify}   (ADA); FieldPolicy (rencana)
+                       Admin/Booking{index,bukti,setujui,tolak},
+                       Admin/Field{index,create,store,edit,update,status}            (ADA); Admin/Dashboard (opsional)
+app/Http/Requests/     StoreBookingRequest, SubmitProofRequest, RejectBookingRequest, FieldRequest (ADA)
+app/Policies/          BookingPolicy{viewAny,create,view,pay,cancel,kelola,verify}, FieldPolicy{kelola,ubah} (ADA)
 database/seeders/      DatabaseSeeder (admin + 3 pelanggan + 8 lapangan + 6 booking demo)
 resources/views/       home, fields/*, payments/show, history/index, admin/bookings/index,
-                       components/field-card, layouts/*                              (ADA); admin/fields/* (rencana)
-public/css/            garuda, katalog, detail, pembayaran, riwayat, admin-booking   (ADA)
+                       admin/fields/{index,form}, components/field-card, layouts/*   (ADA)
+public/css/            garuda, katalog, detail, pembayaran, riwayat, admin-booking, admin-lapangan (ADA)
 config/garuda.php      jam operasional, batas bayar
-tests/Feature/         Fondasi, Locale, Katalog, DetailLapangan, Booking, Payment, Riwayat, AdminBooking (+ tes Breeze)
+tests/Feature/         Fondasi, Locale, Katalog, DetailLapangan, Booking, Payment, Riwayat, AdminBooking, AdminField (+ tes Breeze)
 ```
 
 ## 4. Skema (sudah dimigrasi)
@@ -85,7 +87,7 @@ tests/Feature/         Fondasi, Locale, Katalog, DetailLapangan, Booking, Paymen
 | Tabel | Kolom penting |
 | --- | --- |
 | `users` | name, email, password, phone?, role (`admin`\|`pelanggan`, bawaan `pelanggan`) |
-| `fields` | name, type (`interlock`\|`rumput`\|`vinyl`), price_per_hour, location, description, size, capacity, facilities (JSON), image, rating, reviews_count, status (`aktif`\|`nonaktif`) |
+| `fields` | name (unik), type (`interlock`\|`rumput`\|`vinyl`), price_per_hour, location, description, size, capacity, facilities (JSON), image, rating, reviews_count, status (`aktif`\|`nonaktif`) |
 | `bookings` | code (unik, `GA-ddmm-XXXX`), user_id, field_id, date, start_hour, duration, price_per_hour (salinan), total, status, expires_at?, proof_path?, proof_name?, proof_submitted_at?, rejection_reason?, cancelled_reason?, verified_by?, verified_at?; indeks (field_id, date) |
 
 Slot **tidak** punya tabel: ketersediaan dihitung dari `bookings` yang tidak `dibatalkan`.
@@ -107,7 +109,7 @@ Slot **tidak** punya tabel: ketersediaan dihitung dari `bookings` yang tidak `di
 | Buat booking, unggah bukti, lihat riwayat sendiri | – | ya | – |
 | Batalkan booking sendiri (hanya `menunggu_pembayaran`) | – | ya | – |
 | Verifikasi booking (setujui/tolak/unduh bukti), lihat semua booking | – | – | ya |
-| Kelola lapangan (tambah, ubah, aktif/nonaktif) | – | – | ya (E2) |
+| Kelola lapangan (tambah, ubah, aktif/nonaktif) | – | – | ya |
 
 Pelanggan **hanya** melihat booking miliknya (orang lain = 404). Admin dibuat lewat seeder. **Verifikasi email dimatikan.**
 
@@ -120,29 +122,29 @@ Pelanggan **hanya** melihat booking miliknya (orang lain = 404). Admin dibuat le
 - **Halaman pembayaran (E1b):** pada tahap `bayar`, bila `rejection_reason` terisi, tampil kotak `.pembayaran-galat` "Bukti pembayaran sebelumnya ditolak" + alasannya, di atas kartu transfer. Hilang sendiri setelah bukti baru dikirim.
 - `/riwayat`: admin **403**, tamu ke login. Gagal batal tampil lewat `@error('booking')`; sukses lewat flash `riwayat_pesan`.
 - **Panel admin booking:** `/admin/booking`; pelanggan **403**, tamu ke login. Filter `?status=` dan pencarian `?q=` (kode, nama pelanggan, nama lapangan) di server; tab status menampilkan jumlah. Aksi tolak memakai kolom teks alasan di tiap baris (5–255 karakter, tanpa JavaScript). Sukses lewat flash `admin_pesan`; galat lewat `@error('booking')` dan `@error('alasan')`. Unduh bukti yang berkasnya tidak ada → kembali ke daftar dengan galat `booking`.
-- **Navigasi:** menu Riwayat Booking dan Panel Admin muncul otomatis bila rute `riwayat.index` dan `admin.bookings.index` ada (`Route::has`). Rute yang ada: `home`, `lapangan.index`, `lapangan.show`, `booking.store`, `pembayaran.show`, `pembayaran.store`, `riwayat.index`, `riwayat.batal`, `admin.bookings.index`, `admin.bookings.bukti`, `admin.bookings.setujui`, `admin.bookings.tolak`. Rute admin ada di grup `Route::prefix('admin')->name('admin.')` di dalam middleware `auth`; tambahkan rute E2 di grup yang sama.
-- **Catatan data demo:** booking demo `menunggu_verifikasi` punya `proof_name` tetapi `proof_path` kosong (ditangani). Booking demo `menunggu_pembayaran` kedaluwarsa 1 jam setelah seeder; jalankan `migrate:fresh --seed` sebelum demo. Tanggal booking demo dihitung dari hari seeder dijalankan.
+- **Kelola lapangan (E2):** `/admin/lapangan` (index, `tambah`, `{field}/ubah`, `{field}/status`); pelanggan **403**, tamu ke login. Filter `?status=` dan `?q=` (nama/lokasi) di server. **Menonaktifkan lapangan tidak membatalkan booking yang ada**, hanya menutup pemesanan baru. Tidak ada hapus lapangan. Nama unik; tarif Rp10.000–Rp5.000.000 (bulat); foto JPG/PNG maks. 2 MB, tanpa foto = `images/2-venue-interlock.jpg`; foto unggahan lama dihapus saat diganti; fasilitas = teks berkoma (maks. 12 butir @ 40 karakter); rating dan ulasan baru = 0, tidak bisa diubah dari form. Sukses lewat flash `admin_pesan`.
+- **Navigasi:** menu Riwayat Booking, Panel Admin, dan Kelola Lapangan muncul otomatis bila rutenya ada (`Route::has`); Panel Admin hanya menyala di `admin.bookings.*`. Rute: `home`, `lapangan.index`, `lapangan.show`, `booking.store`, `pembayaran.show`, `pembayaran.store`, `riwayat.index`, `riwayat.batal`, `admin.bookings.{index,bukti,setujui,tolak}`, `admin.fields.{index,create,store,edit,update,status}`. Rute admin ada di grup `Route::prefix('admin')->name('admin.')` di dalam middleware `auth`.
+- **Catatan data demo:** booking demo `menunggu_verifikasi` punya `proof_name` tetapi `proof_path` kosong (ditangani). Booking demo `menunggu_pembayaran` kedaluwarsa 1 jam setelah seeder; jalankan `migrate:fresh --seed` sebelum demo. Tanggal booking demo dihitung dari hari seeder dijalankan. Foto lapangan demo memakai `images/...`; foto unggahan butuh `storage:link`.
 
 ## 7. Pengujian
 
-**119 passed** (target; konfirmasi pemilik). `BookingTest`, `PaymentTest`, `RiwayatTest`, `AdminBookingTest` membekukan waktu di 20 Nov 2026 10:00. Tes tidak memeriksa CSS.
+**132 passed** (konfirmasi pemilik, 17 Nov). `BookingTest`, `PaymentTest`, `RiwayatTest`, `AdminBookingTest` membekukan waktu di 20 Nov 2026 10:00. Tes tidak memeriksa CSS. `AdminFieldTest` memakai `Storage::fake` untuk foto.
 
 **Belum dilakukan:**
-- **Telusur browser belum dilaporkan** untuk beranda, `/lapangan`, detail lapangan, pembayaran (semua tahap, termasuk kotak alasan penolakan), `/riwayat`, dan `/admin/booking` (daftar cek di `RIWAYAT.md`, Langkah D2, E1, E1b). Selalu dengan Ctrl+Shift+R.
-- Unggah bukti sungguhan di browser dan alur per peran.
+- **Telusur browser belum dilaporkan** untuk beranda, `/lapangan`, detail lapangan, pembayaran (semua tahap, termasuk kotak alasan penolakan), `/riwayat`, `/admin/booking`, dan `/admin/lapangan` (daftar dan formulir) (daftar cek di `RIWAYAT.md`, Langkah D2, E1, E1b, E2). Selalu dengan Ctrl+Shift+R.
+- Unggah bukti bayar dan unggah foto lapangan sungguhan di browser; alur per peran.
 - Balapan dua klik hanya terbukti lewat penalaran (`lockForUpdate` tidak berefek di SQLite).
 
 ## 8. Langkah berikutnya (satu langkah per percakapan)
 
-**Selesai:** Langkah 0, A, B1, B2, C, D1, CSS (R1–R3b), D2, E1, **E1b** (kode dan tes selesai; belum dicek browser).
+**Selesai:** Langkah 0, A, B1, B2, C, D1, CSS (R1–R3b), D2, E1, E1b, **E2** (kode dan tes selesai; belum dicek browser).
 
 | Langkah | Isi | Target |
 | --- | --- | --- |
-| E2 | Admin kelola lapangan (tambah, ubah, aktif/nonaktif) | 21 Nov |
-| F | Telusur browser per peran, naskah demo, perbaikan | 22 Nov |
+| F | Telusur browser per peran (termasuk E1b dan E2), naskah demo, perbaikan | 22 Nov |
 
-Sisa/opsional: dashboard dan laporan admin, pesan validasi `lang/id`, README akar, Pull Request ke `main`, `menunggu_verifikasi` lewat jam → `dibatalkan`, pindahkan nomor rekening ke `config/garuda.php`.
+Sisa/opsional (setelah F, bila waktu cukup): dashboard dan laporan admin, pesan validasi `lang/id`, README akar, Pull Request ke `main`, `menunggu_verifikasi` lewat jam → `dibatalkan`, pindahkan nomor rekening ke `config/garuda.php`.
 
-### Langkah E2 — berikutnya
-Usul default: nonaktifkan lapangan **tidak** membatalkan booking yang sudah ada; hanya menutup pemesanan baru. Gunakan `FieldPolicy` dan `FieldRequest`, controller `Admin/FieldController`, CSS sendiri (aturan 17), rute di grup `admin.` (misalnya `admin.fields.index`).
-**Yang perlu ditempel:** `app/Models/Field.php`, `app/Http/Controllers/FieldController.php`, `routes/web.php` (versi terbaru setelah Pint), `app/Providers/AppServiceProvider.php`, `database/seeders/DatabaseSeeder.php` (bagian lapangan), serta `prototipe-statis/webnya/admin-lapangan.html` dan js-nya (cek nama dengan `ls prototipe-statis/webnya/js`).
+### Langkah F — berikutnya
+Pemilik menelusuri browser sebagai tamu, pelanggan, dan admin memakai daftar cek di `RIWAYAT.md`, lalu melaporkan temuan. Claude memperbaiki per temuan (satu temuan, satu serahan) dan menyusun naskah demo 23 Nov (urutan: tamu → booking → bayar → admin verifikasi → kelola lapangan). Sebelum demo: `migrate:fresh --seed`, `storage:link`, `optimize:clear`.
+**Yang perlu ditempel saat mulai:** `git status --short`, `ls`, hasil `php artisan test | tail -n 5`, dan laporan hasil telusur (bagian mana yang rusak). File dibaca hanya sesuai temuan.
