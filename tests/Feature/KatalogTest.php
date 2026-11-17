@@ -101,7 +101,7 @@ class KatalogTest extends TestCase
 
     public function test_navigasi_admin_menandai_peran_admin(): void
     {
-        $admin = User::where('email', 'admin@garudaarena.test')->firstOrFail();
+        $admin = User::where('role', User::ROLE_ADMIN)->firstOrFail();
 
         $this->actingAs($admin)->get('/')
             ->assertOk()

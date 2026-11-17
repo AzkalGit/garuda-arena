@@ -10,7 +10,10 @@
         $menu[] = ['Riwayat Booking', route('riwayat.index'), request()->routeIs('riwayat.*')];
     }
     if (auth()->check() && auth()->user()->isAdmin() && Route::has('admin.bookings.index')) {
-        $menu[] = ['Panel Admin', route('admin.bookings.index'), request()->routeIs('admin.*')];
+        $menu[] = ['Panel Admin', route('admin.bookings.index'), request()->routeIs('admin.bookings.*')];
+    }
+    if (auth()->check() && auth()->user()->isAdmin() && Route::has('admin.fields.index')) {
+        $menu[] = ['Kelola Lapangan', route('admin.fields.index'), request()->routeIs('admin.fields.*')];
     }
 @endphp
 

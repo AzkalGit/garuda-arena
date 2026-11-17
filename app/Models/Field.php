@@ -48,6 +48,25 @@ class Field extends Model
         return $this->status === self::STATUS_AKTIF;
     }
 
+    public function statusLabel(): string
+    {
+        return $this->isActive() ? 'Aktif' : 'Nonaktif';
+    }
+
+    /** Fasilitas sebagai teks berkoma untuk isian form. */
+    public function fasilitasTeks(): string
+    {
+        return implode(', ', $this->facilities ?? []);
+    }
+
+    /** Path di disk publik bila gambar hasil unggahan admin; gambar bawaan (images/...) = null. */
+    public function gambarUnggahan(): ?string
+    {
+        $gambar = (string) $this->image;
+
+        return str_starts_with($gambar, 'storage/lapangan/') ? substr($gambar, strlen('storage/')) : null;
+    }
+
     public function typeLabel(): string
     {
         return self::TYPE_LABELS[$this->type] ?? ucfirst((string) $this->type);
