@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FieldController as AdminFieldController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\FieldController;
@@ -25,6 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/riwayat/{booking:code}/batal', [HistoryController::class, 'batal'])->name('riwayat.batal');
 
     Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', AdminDashboardController::class)->name('dashboard');
         Route::get('/booking', [AdminBookingController::class, 'index'])->name('bookings.index');
         Route::get('/booking/{booking:code}/bukti', [AdminBookingController::class, 'bukti'])->name('bookings.bukti');
         Route::post('/booking/{booking:code}/setujui', [AdminBookingController::class, 'setujui'])->name('bookings.setujui');
