@@ -126,3 +126,8 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - Tes baru `NavbarAdminTest` (2 tes). Total 137 passed.
 - Pelajaran: setelah menempel CSS, selalu cek `git status --short` (file harus ` M`) dan `grep -c` pada satu kelas penanda.
 - Belum: kartu statistik di Kelola Lapangan, filter jenis lapangan, restyle form lapangan lebih jauh.
+### G2 — Dashboard admin (17 Nov 2026)
+- Rute `admin.dashboard` (`/admin`), `Admin/DashboardController` (invokable), view `admin/dashboard.blade.php`, komponen `x-grafik-batang` (SVG dihitung di server), `public/css/admin-dashboard.css`, `DashboardAdminTest` (6 tes).
+- 4 kartu: booking hari ini (tanpa `dibatalkan`), menunggu verifikasi, pendapatan terverifikasi (`dikonfirmasi` + `selesai`, seluruh waktu), lapangan aktif "X dari Y".
+- Grafik "Booking 7 hari terakhir" (hari ini dan 6 hari sebelumnya, tanpa `dibatalkan`); tabel 5 booking terbaru dengan tautan ke Kelola Booking.
+- Tes: 143 passed. Belum diuji di browser.

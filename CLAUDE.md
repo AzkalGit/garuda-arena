@@ -1,7 +1,7 @@
 # CLAUDE.md — Garuda Arena (Laravel)
 
 > Serah-terima antar sesi Claude (versi ringkas). Riwayat langkah selesai ada di `RIWAYAT.md` (minta bagian tertentu bila perlu).
-> Terakhir diperbarui: **17 Nov 2026** · Tes: **137 passed** (ganti bila hasil pemilik berbeda) · Laravel 13 + Breeze (Blade).
+> Terakhir diperbarui: **17 Nov 2026** · Tes: **143 passed** (ganti bila hasil pemilik berbeda) · Laravel 13 + Breeze (Blade).
 > **Target:** demo presentasi UAS (**23 atau 26 Nov 2026**; rencanakan 23 Nov).
 
 ## 0. Cara kerja dan aturan
@@ -10,9 +10,9 @@ Pemilik **bukan programmer mahir** (vibecoder): jelaskan perintah dengan jelas, 
 
 **Cara serah kode:** Claude menulis kode **di chat, per file, lengkap**; pemilik menyalin lewat editor. Claude tidak melihat repo dan tidak bisa menjalankan tes; ia hanya tahu yang ditempel pemilik.
 
-1. **Mulai dengan `git status --short` dan `ls`.** Kode di repo lebih benar daripada berkas ini.
+1. **Mulai dengan `git status --short` dan `ls`.** Kode di repo lebih benar daripada berkas ini. Bila ada berkas `??`/` M` yang tampak pekerjaan langkah ini, minta isinya dulu sebelum menulis ulang (G2 pernah sudah selesai tanpa tercatat).
 2. **Jangan mengarang isi file yang belum dilihat.** Minta tempel dulu. Berkas bersama (`routes/web.php`, Policy, layout, model, `garuda.css`) jangan ditimpa utuh sebelum dilihat versi terbarunya (Pint mengubah kode yang tersimpan).
-3. **Satu langkah per percakapan.** Untuk tes cukup baris `Tests: N passed` kecuali ada yang gagal. File panjang: `grep -n "function"` dulu. "Cari-ganti" hanya bila teks lama ditampilkan lengkap, unik, dan satu blok jelas; selain itu file utuh. Perintah `git diff` selalu pakai `git --no-pager`.
+3. **Satu langkah per percakapan.** Untuk tes cukup baris `Tests: N passed` kecuali ada yang gagal (`php artisan test 2>&1 | tail -n 8`). File panjang: `grep -n "function"` dulu. "Cari-ganti" hanya bila teks lama ditampilkan lengkap, unik, dan satu blok jelas; selain itu file utuh. Perintah `git diff` selalu pakai `git --no-pager`.
 4. **Serahan memuat:** (a) file BARU/UBAH, (b) perintah untuk pemilik, (c) yang sudah diuji dan caranya, (d) yang belum bisa diuji. Pemilik tidak pernah menempel `.env`, `vendor/`, `node_modules/`, `*.sqlite`, `*.log`, kata sandi, atau token. **Tiap serahan diakhiri perintah verifikasi tempel:** `wc -l`, `grep -c` pada satu kelas/teks penanda per file, `git status --short` (file yang diubah harus ` M`). Pelajaran G1b: CSS sempat tertempel ke file yang salah dan tidak ketahuan.
 5. **Jujur soal pengujian:** jangan klaim "sudah dicoba di browser" bila hanya tes otomatis. **View yang belum dijalankan = belum teruji.** Hindari logika rumit di view; siapkan data di controller.
 6. **Tiap aturan baru wajib ada tesnya**; tes lama tetap lulus. Tes "risky" (tanpa assertion) dianggap belum lulus. Saat mengubah perilaku, cari tes lama yang terdampak dengan `grep` pada teks view *dan* nama rute/flash; tes yang memeriksa perilaku yang sengaja diganti diubah.
@@ -62,7 +62,7 @@ php artisan optimize:clear
 - **Format tampilan lewat metode model** (`Field::priceLabel()`, `ratingLabel()`, `typeLabel()`, `imageUrl()`, `isActive()`, `statusLabel()`, `fasilitasTeks()`, `gambarUnggahan()`; `Booking::jamLabel()`, `totalLabel()`, `tanggalLabel()`, `tarifLabel()`, `sisaMenit()`, `bisaDibayar()`, `bisaDiverifikasi()`, `statusLabel()`, `statusKelas()`, `Booking::daftarStatus()`), bukan logika di view. Filter/urutan/pencarian lewat parameter URL yang divalidasi di controller (nilai tak dikenal diabaikan).
 - **Bukti bayar** di disk privat (`local`, `bukti-bayar/`), tidak pernah `public`; tipe dan ukuran divalidasi di server; unduh lewat rute yang dicek hak. **Foto lapangan** di disk `public` (`storage/lapangan/`), dicatat sebagai `storage/...`; gambar bawaan `images/...` tidak pernah dihapus.
 - **Layout publik** `x-app-layout` memuat `layouts.navigation` dan `layouts.footer`, slot `header` dan `head` opsional. **Layout admin** `x-admin-layout` (komponen `x-admin-sisi` untuk isi sidebar): sidebar kiri hijau tua dengan ikon SVG inline (tersembunyi di bawah 768px, diganti menu geser Alpine `buka`), topbar (judul "Panel Admin" + avatar inisial `.admin-avatar` + nama), slot `head`/`header` opsional; tanpa navbar dan footer publik. Menu sidebar dibuat dari daftar `[label, rute, pola, ikon]` dan hanya tampil bila `Route::has(rute)`: `admin.dashboard`, `admin.bookings.index`, `admin.fields.index`, `admin.users.index`, `admin.reports.index`.
-- **Pembagian CSS:** `admin-layout.css` = kerangka (sidebar, menu geser, topbar, avatar; dimuat oleh layout). `admin-booking.css` = `.admin-cari*`, `.admin-tabel*`, `.admin-kode`, `.admin-kecil`, `.admin-kosong`, `.admin-aksi`, `.admin-tombol-{bukti,setuju,tolak}`, `.admin-form-tolak`. `admin-lapangan.css` = `.admin-tombol-tambah`, `.lencana-lapangan`, `.form-*`, `.tombol-simpan`. `riwayat.css` = `.riwayat-*` (halaman, kepala, pesan, galat), `.filter-status`, `.filter-tombol`, `.lencana-status`, `.status-*`. `pembayaran.css` = `.tombol-kirim`, `.tombol-kembali`, `.pembayaran-galat`. `garuda.css` = variabel, navbar, footer, `.tombol-panel-admin` (akhir berkas). Halaman admin lain memuat ulang berkas yang dibutuhkan lewat slot `head`; **halaman admin baru memuat `riwayat.css` + `admin-booking.css`**.
+- **Pembagian CSS:** `admin-layout.css` = kerangka (sidebar, menu geser, topbar, avatar; dimuat oleh layout). `admin-booking.css` = `.admin-cari*`, `.admin-tabel*` (termasuk `.admin-tabel-bungkus`), `.admin-kode`, `.admin-kecil`, `.admin-kosong`, `.admin-aksi`, `.admin-tombol-{bukti,setuju,tolak}`, `.admin-form-tolak`. `admin-lapangan.css` = `.admin-tombol-tambah`, `.lencana-lapangan`, `.form-*`, `.tombol-simpan`. `admin-dashboard.css` = `.dashboard-*` (kartu, ikon, panel, tautan) dan `.grafik-*` (SVG `x-grafik-batang`; halaman mana pun yang memakai grafik memuat berkas ini). `riwayat.css` = `.riwayat-*` (halaman, kepala, pesan, galat), `.filter-status`, `.filter-tombol`, `.lencana-status`, `.status-*`. `pembayaran.css` = `.tombol-kirim`, `.tombol-kembali`, `.pembayaran-galat`. `garuda.css` = variabel, navbar, footer, `.tombol-panel-admin` (akhir berkas). Halaman admin lain memuat ulang berkas yang dibutuhkan lewat slot `head`; **halaman admin baru memuat `riwayat.css` + `admin-booking.css`** (+ `admin-dashboard.css` bila ada grafik).
 - Jangan simpan rahasia di repo atau percakapan. Seeder memuat kata sandi demo sementara (`DEMO_PASSWORD`): ganti sendiri, catat di luar repo.
 
 ## 3. Struktur
@@ -71,19 +71,20 @@ php artisan optimize:clear
 app/Models/            User, Field, Booking                                          (ADA)
 app/Http/Controllers/  Home, Field, Booking{store}, Payment{show,store}, History{index,batal},
                        Admin/Booking{index,bukti,setujui,tolak},
-                       Admin/Field{index,create,store,edit,update,status}            (ADA)
-                       Admin/Dashboard, Admin/Report, Admin/User                     (BELUM: G2–G4)
+                       Admin/Field{index,create,store,edit,update,status},
+                       Admin/Dashboard (invokable)                                   (ADA)
+                       Admin/Report, Admin/User                                      (BELUM: G3–G4)
 app/Http/Requests/     StoreBookingRequest, SubmitProofRequest, RejectBookingRequest, FieldRequest (ADA)
 app/Policies/          BookingPolicy{viewAny,create,view,pay,cancel,kelola,verify}, FieldPolicy{kelola,ubah} (ADA)
 database/seeders/      DatabaseSeeder (admin + 3 pelanggan + 8 lapangan + 6 booking demo)
-resources/views/       home, fields/*, payments/show, history/index, admin/bookings/index,
-                       admin/fields/{index,form}, components/{field-card,admin-layout,admin-sisi}, layouts/*   (ADA)
-public/css/            garuda, katalog, detail, pembayaran, riwayat, admin-booking, admin-lapangan, admin-layout (ADA)
+resources/views/       home, fields/*, payments/show, history/index, admin/dashboard, admin/bookings/index,
+                       admin/fields/{index,form}, components/{field-card,admin-layout,admin-sisi,grafik-batang}, layouts/*   (ADA)
+public/css/            garuda, katalog, detail, pembayaran, riwayat, admin-booking, admin-lapangan, admin-layout, admin-dashboard (ADA)
 config/garuda.php      jam operasional, batas bayar
-tests/Feature/         Fondasi, Locale, Katalog, DetailLapangan, Booking, Payment, Riwayat, AdminBooking, AdminField, AdminLayout, NavbarAdmin (+ tes Breeze)
+tests/Feature/         Fondasi, Locale, Katalog, DetailLapangan, Booking, Payment, Riwayat, AdminBooking, AdminField, AdminLayout, NavbarAdmin, DashboardAdmin (+ tes Breeze)
 ```
 
-Rute admin ada di grup `Route::prefix('admin')->name('admin.')` di `routes/web.php` (di dalam middleware `auth`): `/booking`, `/booking/{booking:code}/{bukti|setujui|tolak}`, `/lapangan`, `/lapangan/tambah`, `/lapangan/{field}/{ubah|status}`. Rute baru G2–G4 ditambahkan di grup yang sama.
+Rute admin ada di grup `Route::prefix('admin')->name('admin.')` di `routes/web.php` (di dalam middleware `auth`): `/` (dashboard), `/booking`, `/booking/{booking:code}/{bukti|setujui|tolak}`, `/lapangan`, `/lapangan/tambah`, `/lapangan/{field}/{ubah|status}`. Rute baru G3–G4 ditambahkan di grup yang sama.
 
 ## 4. Skema (sudah dimigrasi)
 
@@ -102,7 +103,7 @@ Slot **tidak** punya tabel: ketersediaan dihitung dari `bookings` yang tidak `di
 **Status:** `menunggu_pembayaran` → `menunggu_verifikasi` → `dikonfirmasi` → `selesai`; juga `dibatalkan`.
 
 - **Cek bentrok oleh server** di `Booking::createPending()`: `DB::transaction` + `lockForUpdate` pada baris lapangan; tumpang tindih `start < end_lain` dan `start_lain < end`, status bukan `dibatalkan`; bertetangga boleh. Hanya lapangan `aktif` yang bisa dipesan. Total = harga per jam × durasi (harga disalin).
-- **`Booking::perbaruiStatus()`** (tanpa scheduler; dipanggil sebelum membaca data): `menunggu_pembayaran` lewat `expires_at` → `dibatalkan` ("Waktu pembayaran habis"); `dikonfirmasi` yang jam selesainya sudah lewat → `selesai` (dihitung di PHP agar sama di SQLite/MariaDB). **Usul belum dibuat:** `menunggu_verifikasi` yang jam mainnya lewat → `dibatalkan`.
+- **`Booking::perbaruiStatus()`** (tanpa scheduler; dipanggil sebelum membaca data, juga oleh dashboard): `menunggu_pembayaran` lewat `expires_at` → `dibatalkan` ("Waktu pembayaran habis"); `dikonfirmasi` yang jam selesainya sudah lewat → `selesai` (dihitung di PHP agar sama di SQLite/MariaDB). **Usul belum dibuat:** `menunggu_verifikasi` yang jam mainnya lewat → `dibatalkan`.
 - **`kirimBukti()`:** cek ulang `bisaDibayar()` di transaksi + `lockForUpdate`, simpan ke disk `local`, status → `menunggu_verifikasi`, `expires_at` NULL, `rejection_reason` NULL.
 - **`batalkan()`:** cek ulang di transaksi + `lockForUpdate`; hanya `menunggu_pembayaran`; selain itu `ValidationException` kunci `booking`. Alasan "Dibatalkan pelanggan".
 - **`setujui(User $admin)`:** hanya dari `menunggu_verifikasi` (cek ulang di transaksi + kunci baris, selain itu `ValidationException` kunci `booking`) → `dikonfirmasi`, isi `verified_by`/`verified_at`.
@@ -115,7 +116,8 @@ Slot **tidak** punya tabel: ketersediaan dihitung dari `bookings` yang tidak `di
 | Batalkan booking sendiri (hanya `menunggu_pembayaran`) | – | ya | – |
 | Verifikasi booking (setujui/tolak/unduh bukti), lihat semua booking | – | – | ya |
 | Kelola lapangan (tambah, ubah, aktif/nonaktif) | – | – | ya |
-| Dashboard, laporan, kelola user (G2–G4, belum ada) | – | – | ya |
+| Dashboard (G2, ada) | – | – | ya |
+| Laporan, kelola user (G3–G4, belum ada) | – | – | ya |
 
 Pelanggan **hanya** melihat booking miliknya (orang lain = 404). Admin dibuat lewat seeder. **Verifikasi email dimatikan.**
 
@@ -131,19 +133,19 @@ Pelanggan **hanya** melihat booking miliknya (orang lain = 404). Admin dibuat le
 - **Kelola lapangan (E2):** `/admin/lapangan` (index, `tambah`, `{field}/ubah`, `{field}/status`); pelanggan **403**. **Menonaktifkan lapangan tidak membatalkan booking yang ada.** Tidak ada hapus lapangan. Nama unik; tarif Rp10.000–Rp5.000.000; foto JPG/PNG maks. 2 MB, tanpa foto = `images/2-venue-interlock.jpg`; fasilitas = teks berkoma (maks. 12 butir @ 40 karakter); rating dan ulasan baru = 0.
 - **Navigasi publik (G1b selesai):** pelanggan melihat "Riwayat Booking"; admin melihat satu tombol oranye `.tombol-panel-admin` "Panel Admin" (juga di menu mobile) yang menuju `admin.dashboard` bila rutenya ada, kalau tidak `admin.bookings.index`. "Kelola Lapangan" hanya di sidebar. Variabel `$urlPanel` dihitung di bagian `@php` atas `navigation.blade.php`.
 - **Tampilan admin (G1b selesai):** sidebar ala prototipe (logo bulat, ikon SVG, menu aktif kotak hijau), topbar dengan avatar inisial, tabel/tombol/cari sudah bergaya. **Belum ada (opsional, dari prototipe):** kartu statistik Total/Aktif/Nonaktif di Kelola Lapangan, filter jenis lantai, kolom rating, ikon di kotak cari.
-- **Rancangan laporan (usul, default dipakai bila pemilik tak menjawab):** tidak ada tabel baru. Tab **Minggu / Bulan / Tahun / Kustom** lewat formulir `GET` (`?periode=`, `?tanggal=` untuk acuan, `?dari=`/`?sampai=` untuk kustom, `<input type="date">`, tanpa JavaScript, bisa di-bookmark). Hitung hanya booking `dikonfirmasi` dan `selesai`. Statistik: total booking, pendapatan, jam terpakai, rata-rata per booking, lapangan terlaris, jam tersibuk, jumlah pembatalan, perbandingan dengan periode sebelumnya. Tabel per lapangan (jenis, jumlah booking, jam terpakai, tarif/jam, pendapatan). **CSV:** angka saja (ringkasan di atas, tabel per lapangan di bawah), pemisah `;`, BOM UTF-8, tanpa grafik. Prototipe hanya punya bulan berjalan.
-- **Rancangan diagram (usul):** dashboard = satu grafik batang "Booking 7 hari terakhir"; laporan = satu grafik tren mengikuti periode (per hari untuk minggu/bulan, per bulan untuk tahun); semuanya komponen SVG `x-grafik-batang` (aturan 19). Pemilik sempat menahan keputusan diagram; konfirmasi bila perlu.
-- **Rancangan dashboard (dari prototipe):** 4 kartu (booking hari ini, menunggu verifikasi, pendapatan terverifikasi, lapangan aktif "X dari Y"), grafik 7 hari, tabel booking terbaru dengan tautan ke Kelola Booking. Halaman memuat `riwayat.css` + `admin-booking.css` + CSS dashboard baru.
+- **Dashboard (G2 selesai, belum dicek browser):** `/admin` (`Admin/DashboardController` invokable, `Gate::authorize('kelola', Booking::class)`, memanggil `Booking::perbaruiStatus()`). 4 kartu: booking hari ini (tanpa `dibatalkan`), menunggu verifikasi, pendapatan terverifikasi (`dikonfirmasi` + `selesai`, seluruh waktu, format `Rp 280.000`), lapangan aktif "X dari Y". Grafik "Booking 7 hari terakhir" = hari ini dan 6 hari sebelumnya (tanpa `dibatalkan`). Tabel 5 booking terbaru. Komponen `x-grafik-batang` menerima `:data` = larik `['label' => string, 'nilai' => int]` dan `judul`; **dipakai ulang di G3**. Redirect admin ke dashboard setelah login **belum dibuat** (opsional).
+- **Rancangan laporan (usul, default dipakai bila pemilik tak menjawab):** tidak ada tabel baru. Tab **Minggu / Bulan / Tahun / Kustom** lewat formulir `GET` (`?periode=`, `?tanggal=` untuk acuan, `?dari=`/`?sampai=` untuk kustom, `<input type="date">`, tanpa JavaScript, bisa di-bookmark). Hitung hanya booking `dikonfirmasi` dan `selesai`. Statistik: total booking, pendapatan, jam terpakai, rata-rata per booking, lapangan terlaris, jam tersibuk, jumlah pembatalan, perbandingan dengan periode sebelumnya. Tabel per lapangan (jenis, jumlah booking, jam terpakai, tarif/jam, pendapatan). Grafik tren memakai `x-grafik-batang` (per hari untuk minggu/bulan, per bulan untuk tahun). **CSV:** angka saja (ringkasan di atas, tabel per lapangan di bawah), pemisah `;`, BOM UTF-8, tanpa grafik. Prototipe hanya punya bulan berjalan.
 - **Rancangan kelola user (usul sederhana):** `/admin/pengguna`, daftar semua user dengan pencarian nama/email, peran, jumlah booking; tanpa hapus dan tanpa ubah peran lewat form (peran hanya lewat seeder). Tidak ada di prototipe. Perluas hanya bila dosen minta.
 - **Catatan data demo:** booking demo `menunggu_verifikasi` punya `proof_name` tetapi `proof_path` kosong (ditangani). Booking demo `menunggu_pembayaran` kedaluwarsa 1 jam setelah seeder; jalankan `migrate:fresh --seed` sebelum demo. Tanggal booking demo dihitung dari hari seeder dijalankan. Foto lapangan demo memakai `images/...`; foto unggahan butuh `storage:link`.
 
 ## 7. Pengujian
 
-**137 passed** (asumsi dari pemilik, 17 Nov; ganti bila beda). `BookingTest`, `PaymentTest`, `RiwayatTest`, `AdminBookingTest` membekukan waktu di 20 Nov 2026 10:00. Tes tidak memeriksa CSS. `AdminFieldTest` memakai `Storage::fake`. `AdminLayoutTest` (3 tes): sidebar ada di halaman admin booking dan lapangan, tidak ada di beranda. `NavbarAdminTest` (2 tes): tombol Panel Admin hanya untuk admin, "Kelola Lapangan" tidak ada di navbar.
+**143 passed** (hasil pemilik, 17 Nov; ganti bila beda). `BookingTest`, `PaymentTest`, `RiwayatTest`, `AdminBookingTest` membekukan waktu di 20 Nov 2026 10:00; `DashboardAdminTest` (6 tes) juga. Tes tidak memeriksa CSS. `AdminFieldTest` memakai `Storage::fake`. `AdminLayoutTest` (3 tes): sidebar ada di halaman admin booking dan lapangan, tidak ada di beranda. `NavbarAdminTest` (2 tes): tombol Panel Admin hanya untuk admin, "Kelola Lapangan" tidak ada di navbar. `DashboardAdminTest`: tamu → login, pelanggan 403, angka kartu, grafik 7 hari, booking terbaru maks. 5, tautan dashboard di sidebar.
 
 **Dikonfirmasi pemilik di browser (17 Nov):** `/admin/booking` tampil baik di layar lebar setelah G1b.
 
 **Belum dilakukan:**
+- **Dashboard `/admin` di browser** (kartu, grafik SVG, tabel; layar lebar dan sempit).
 - Layar sempit panel admin (menu geser, tabel bisa digeser, tombol Keluar) dan `/admin/lapangan` + form tambah/ubah setelah G1b belum dilaporkan.
 - **Telusur browser belum dilaporkan** untuk beranda, `/lapangan`, detail lapangan, pembayaran (semua tahap), `/riwayat`. Selalu dengan Ctrl+Shift+R.
 - Unggah bukti bayar dan unggah foto lapangan sungguhan di browser; alur per peran.
@@ -151,16 +153,15 @@ Pelanggan **hanya** melihat booking miliknya (orang lain = 404). Admin dibuat le
 
 ## 8. Langkah berikutnya (satu langkah per percakapan)
 
-**Selesai:** Langkah 0, A, B1, B2, C, D1, CSS (R1–R3b), D2, E1, E1b, E2, F-naskah (naskah demo ±8 menit tersusun di chat), G1 (layout admin), **G1b** (navbar publik + restyle sidebar, topbar, tabel, tombol).
+**Selesai:** Langkah 0, A, B1, B2, C, D1, CSS (R1–R3b), D2, E1, E1b, E2, F-naskah (naskah demo ±8 menit tersusun di chat), G1 (layout admin), G1b (navbar publik + restyle admin), **G2** (dashboard; tes 143 passed, tampilan browser belum dilaporkan).
 
 | Langkah | Isi | Target |
 | --- | --- | --- |
-| **G2** | Dashboard: rute `admin.dashboard` (`/admin`), controller, 4 kartu, grafik 7 hari (`x-grafik-batang`), booking terbaru; setelah login admin ke dashboard bila sempat; tes. Sidebar dan navbar otomatis memakai rute ini | 20 Nov |
-| **G3** | Laporan: rute `admin.reports.index`, periode minggu/bulan/tahun/kustom, statistik, grafik tren, tabel per lapangan, unduh CSV (`;` + BOM); tes | 21 Nov |
+| **G3** | Laporan: rute `admin.reports.index`, periode minggu/bulan/tahun/kustom, statistik, grafik tren (`x-grafik-batang`), tabel per lapangan, unduh CSV (`;` + BOM); tes | 21 Nov |
 | **G4** | Kelola user (sederhana, lihat rancangan); tes | 22 Nov |
-| F2 | Gladi demo = telusur browser per peran (termasuk layar sempit admin), perbaikan temuan, naskah demo diperbarui memuat sidebar, dashboard, laporan, user | 22 Nov |
+| F2 | Gladi demo = telusur browser per peran (termasuk dashboard dan layar sempit admin), perbaikan temuan, naskah demo diperbarui memuat sidebar, dashboard, laporan, user | 22 Nov |
 
-Jika waktu mepet, urutan prioritas: G3 → G2 → G4 (G1b sudah selesai). Sisa/opsional: kartu statistik di Kelola Lapangan, pesan validasi `lang/id`, README akar, Pull Request ke `main`, `menunggu_verifikasi` lewat jam → `dibatalkan`, nomor rekening ke `config/garuda.php`.
+Jika waktu mepet, urutan prioritas: G3 → G4. Sisa/opsional: redirect admin ke dashboard setelah login, kartu statistik di Kelola Lapangan, pesan validasi `lang/id`, README akar, Pull Request ke `main`, `menunggu_verifikasi` lewat jam → `dibatalkan`, nomor rekening ke `config/garuda.php`.
 
-### Langkah G2 — berikutnya
-**Yang perlu ditempel saat mulai:** `git status --short`, `ls`, `php artisan test | tail -n 5`, `routes/web.php`, `app/Http/Controllers/Admin/BookingController.php`, `app/Models/Booking.php` (`grep -n "function"` dulu), `app/Models/Field.php` (`grep -n "function"`), `database/seeders/DatabaseSeeder.php` bila perlu, dan prototipe `prototipe-statis/webnya/admin-dashboard.html` (isi `<main>`). Konfirmasi dulu satu pertanyaan: grafik 7 hari = **7 hari terakhir sampai hari ini** (default) atau 7 hari ke depan.
+### Langkah G3 — berikutnya
+**Yang perlu ditempel saat mulai:** `git status --short`, `ls`, `php artisan test 2>&1 | tail -n 8`, `routes/web.php`, `app/Http/Controllers/Admin/DashboardController.php`, `resources/views/components/grafik-batang.blade.php`, `app/Models/Booking.php` (`grep -n "function"` dulu), `app/Models/Field.php` (`grep -n "function"`), dan prototipe `prototipe-statis/webnya/admin-laporan.html` (`grep -n "<main"` lalu `sed -n 'a,bp'`). Sidebar otomatis menampilkan menu Laporan begitu rute `admin.reports.index` ada. Konfirmasi dulu satu pertanyaan: pakai rancangan laporan di bagian 6 apa adanya (default), atau ada yang diubah?
