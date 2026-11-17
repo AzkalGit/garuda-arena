@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="head">
         <link rel="stylesheet" href="{{ asset('css/riwayat.css') }}">
         <link rel="stylesheet" href="{{ asset('css/admin-booking.css') }}">
@@ -93,4 +93,4 @@
             </table>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>
