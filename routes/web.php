@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FieldController as AdminFieldController;
+use App\Http\Controllers\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\HistoryController;
@@ -38,6 +39,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/lapangan/{field}/ubah', [AdminFieldController::class, 'edit'])->name('fields.edit');
         Route::put('/lapangan/{field}', [AdminFieldController::class, 'update'])->name('fields.update');
         Route::post('/lapangan/{field}/status', [AdminFieldController::class, 'status'])->name('fields.status');
+
+        Route::get('/laporan', [AdminReportController::class, 'index'])->name('reports.index');
+        Route::get('/laporan/csv', [AdminReportController::class, 'csv'])->name('reports.csv');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

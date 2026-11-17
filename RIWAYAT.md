@@ -131,3 +131,12 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - 4 kartu: booking hari ini (tanpa `dibatalkan`), menunggu verifikasi, pendapatan terverifikasi (`dikonfirmasi` + `selesai`, seluruh waktu), lapangan aktif "X dari Y".
 - Grafik "Booking 7 hari terakhir" (hari ini dan 6 hari sebelumnya, tanpa `dibatalkan`); tabel 5 booking terbaru dengan tautan ke Kelola Booking.
 - Tes: 143 passed. Belum diuji di browser.
+## G3 — Laporan (17 Nov 2026)
+- Rute `GET /admin/laporan` (`admin.reports.index`) dan `GET /admin/laporan/csv` (`admin.reports.csv`) di grup admin.
+- `Admin/ReportController` (`index`, `csv`; privat `susun`, `rentang`, `tanggal`, `rupiah`, `barisCsv`). Periode lewat `?periode=` (minggu/bulan/tahun/kustom), `?tanggal=`, `?dari=`/`?sampai=`; masukan tak valid diabaikan, tanggal terbalik dirapikan.
+- Hanya booking `dikonfirmasi` dan `selesai` dihitung. Ada perbandingan dengan periode sebelumnya, tabel per lapangan, dan grafik tren memakai `x-grafik-batang`.
+- CSV: pemisah `;`, BOM UTF-8, ringkasan di atas dan tabel lapangan di bawah, angka tanpa format Rp.
+- View `resources/views/admin/reports/index.blade.php`, CSS `public/css/admin-laporan.css`.
+- Tes baru `ReportAdminTest` (12 tes). Total 155 passed.
+- Kendala: route sempat belum tertempel, sehingga 12 tes gagal (404). Setelah ditambahkan, semua lulus.
+- Belum dicek di browser.
