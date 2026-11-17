@@ -1,7 +1,7 @@
 # CLAUDE.md — Garuda Arena (Laravel)
 
 > Serah-terima antar sesi Claude (versi ringkas). Riwayat langkah selesai ada di `RIWAYAT.md` (minta bagian tertentu bila perlu).
-> Terakhir diperbarui: **17 Nov 2026** · Tes: **117 passed** (hijau, dilaporkan pemilik) · Laravel 13 + Breeze (Blade).
+> Terakhir diperbarui: **17 Nov 2026** · Tes: **119 passed** (117 + 2 tes E1b; ganti bila hasil pemilik berbeda) · Laravel 13 + Breeze (Blade).
 > **Target:** demo presentasi UAS (**23 atau 26 Nov 2026**; rencanakan 23 Nov).
 
 ## 0. Cara kerja dan aturan
@@ -59,7 +59,7 @@ php artisan optimize:clear
 - **Tanggal dan jam hanya lewat Carbon.** Nama bulan di view: `->locale('id')->translatedFormat(...)`. Tes membekukan waktu dengan `Carbon::setTestNow(...)`.
 - **Format tampilan lewat metode model** (`Field::priceLabel()`, `ratingLabel()`, `typeLabel()`, `imageUrl()`, `isActive()`; `Booking::jamLabel()`, `totalLabel()`, `tanggalLabel()`, `tarifLabel()`, `sisaMenit()`, `bisaDibayar()`, `bisaDiverifikasi()`, `statusLabel()`, `statusKelas()`, `Booking::daftarStatus()`), bukan logika di view. Filter/urutan/pencarian lewat parameter URL yang divalidasi di controller (nilai tak dikenal diabaikan).
 - **Bukti bayar** di disk privat (`local`, `bukti-bayar/`), tidak pernah `public`; tipe dan ukuran divalidasi di server; unduh lewat rute yang dicek hak.
-- Layout `app` memuat `layouts.navigation` dan `layouts.footer`, slot `header` dan `head` opsional. Tombol kirim bukti (`.tombol-kirim`) dan kembali (`.tombol-kembali`) ada di `pembayaran.css`. Lencana status (`.lencana-status`, `.status-*`), `.filter-status`, `.filter-tombol`, `.riwayat-pesan`, `.riwayat-galat` ada di `riwayat.css` dan dipakai ulang halaman admin.
+- Layout `app` memuat `layouts.navigation` dan `layouts.footer`, slot `header` dan `head` opsional. Tombol kirim bukti (`.tombol-kirim`), kembali (`.tombol-kembali`), dan kotak galat/pemberitahuan (`.pembayaran-galat`) ada di `pembayaran.css`. Lencana status (`.lencana-status`, `.status-*`), `.filter-status`, `.filter-tombol`, `.riwayat-pesan`, `.riwayat-galat` ada di `riwayat.css` dan dipakai ulang halaman admin.
 - Jangan simpan rahasia di repo atau percakapan. Seeder memuat kata sandi demo sementara (`DEMO_PASSWORD`): ganti sendiri, catat di luar repo.
 
 ## 3. Struktur
@@ -117,35 +117,32 @@ Pelanggan **hanya** melihat booking miliknya (orang lain = 404). Admin dibuat le
 - `/dashboard` Breeze dihapus; setelah login semua peran ke `home`. Filter/urutan/ketersediaan di **server** lewat parameter URL, tanpa JavaScript. Detail lapangan `nonaktif` = 404.
 - Buat booking: `StoreBookingRequest::authorize()` lewat `BookingPolicy::create` (admin 403). Tanggal form dari `?tanggal=` (tak valid/lewat → hari ini); jam lewat radio, durasi 1–3. Setelah sukses redirect ke `pembayaran.show`.
 - Bukti bayar hanya **JPG/PNG, maks. 2 MB**. Orang lain termasuk admin = 404 di `pembayaran.show/store`. Nomor rekening fiktif (1234 5678 9012) tertulis di view `payments/show`. Sisa waktu bayar = menit dari server.
+- **Halaman pembayaran (E1b):** pada tahap `bayar`, bila `rejection_reason` terisi, tampil kotak `.pembayaran-galat` "Bukti pembayaran sebelumnya ditolak" + alasannya, di atas kartu transfer. Hilang sendiri setelah bukti baru dikirim.
 - `/riwayat`: admin **403**, tamu ke login. Gagal batal tampil lewat `@error('booking')`; sukses lewat flash `riwayat_pesan`.
 - **Panel admin booking:** `/admin/booking`; pelanggan **403**, tamu ke login. Filter `?status=` dan pencarian `?q=` (kode, nama pelanggan, nama lapangan) di server; tab status menampilkan jumlah. Aksi tolak memakai kolom teks alasan di tiap baris (5–255 karakter, tanpa JavaScript). Sukses lewat flash `admin_pesan`; galat lewat `@error('booking')` dan `@error('alasan')`. Unduh bukti yang berkasnya tidak ada → kembali ke daftar dengan galat `booking`.
-- **Navigasi:** menu Riwayat Booking dan Panel Admin muncul otomatis bila rute `riwayat.index` dan `admin.bookings.index` ada (`Route::has`); Panel Admin kini aktif. Rute yang ada: `home`, `lapangan.index`, `lapangan.show`, `booking.store`, `pembayaran.show`, `pembayaran.store`, `riwayat.index`, `riwayat.batal`, `admin.bookings.index`, `admin.bookings.bukti`, `admin.bookings.setujui`, `admin.bookings.tolak`. Rute admin ada di grup `Route::prefix('admin')->name('admin.')` di dalam middleware `auth`; tambahkan rute E2 di grup yang sama.
-- **Catatan data demo:** booking demo `menunggu_verifikasi` punya `proof_name` tetapi `proof_path` kosong (ditangani, lihat di atas). Booking demo `menunggu_pembayaran` kedaluwarsa 1 jam setelah seeder; jalankan `migrate:fresh --seed` sebelum demo. Tanggal booking demo dihitung dari hari seeder dijalankan.
+- **Navigasi:** menu Riwayat Booking dan Panel Admin muncul otomatis bila rute `riwayat.index` dan `admin.bookings.index` ada (`Route::has`). Rute yang ada: `home`, `lapangan.index`, `lapangan.show`, `booking.store`, `pembayaran.show`, `pembayaran.store`, `riwayat.index`, `riwayat.batal`, `admin.bookings.index`, `admin.bookings.bukti`, `admin.bookings.setujui`, `admin.bookings.tolak`. Rute admin ada di grup `Route::prefix('admin')->name('admin.')` di dalam middleware `auth`; tambahkan rute E2 di grup yang sama.
+- **Catatan data demo:** booking demo `menunggu_verifikasi` punya `proof_name` tetapi `proof_path` kosong (ditangani). Booking demo `menunggu_pembayaran` kedaluwarsa 1 jam setelah seeder; jalankan `migrate:fresh --seed` sebelum demo. Tanggal booking demo dihitung dari hari seeder dijalankan.
 
 ## 7. Pengujian
 
-**117 passed** (hijau). `BookingTest`, `PaymentTest`, `RiwayatTest`, `AdminBookingTest` membekukan waktu di 20 Nov 2026 10:00. Tes tidak memeriksa CSS.
+**119 passed** (target; konfirmasi pemilik). `BookingTest`, `PaymentTest`, `RiwayatTest`, `AdminBookingTest` membekukan waktu di 20 Nov 2026 10:00. Tes tidak memeriksa CSS.
 
 **Belum dilakukan:**
-- **Telusur browser belum dilaporkan** untuk beranda, `/lapangan`, detail lapangan, pembayaran (semua tahap), `/riwayat`, dan **`/admin/booking`** (daftar cek di `RIWAYAT.md`, Langkah D2 dan E1). Selalu dengan Ctrl+Shift+R.
+- **Telusur browser belum dilaporkan** untuk beranda, `/lapangan`, detail lapangan, pembayaran (semua tahap, termasuk kotak alasan penolakan), `/riwayat`, dan `/admin/booking` (daftar cek di `RIWAYAT.md`, Langkah D2, E1, E1b). Selalu dengan Ctrl+Shift+R.
 - Unggah bukti sungguhan di browser dan alur per peran.
 - Balapan dua klik hanya terbukti lewat penalaran (`lockForUpdate` tidak berefek di SQLite).
 
 ## 8. Langkah berikutnya (satu langkah per percakapan)
 
-**Selesai:** Langkah 0, A, B1, B2, C, D1, CSS (R1–R3b), D2, **E1** (kode dan tes selesai; belum dicek browser).
+**Selesai:** Langkah 0, A, B1, B2, C, D1, CSS (R1–R3b), D2, E1, **E1b** (kode dan tes selesai; belum dicek browser).
 
 | Langkah | Isi | Target |
 | --- | --- | --- |
-| E1b | Halaman `payments/show` menampilkan `rejection_reason` bila booking kembali ke `menunggu_pembayaran` setelah ditolak (langkah kecil) | 20 Nov |
 | E2 | Admin kelola lapangan (tambah, ubah, aktif/nonaktif) | 21 Nov |
 | F | Telusur browser per peran, naskah demo, perbaikan | 22 Nov |
 
 Sisa/opsional: dashboard dan laporan admin, pesan validasi `lang/id`, README akar, Pull Request ke `main`, `menunggu_verifikasi` lewat jam → `dibatalkan`, pindahkan nomor rekening ke `config/garuda.php`.
 
-### Langkah E1b — berikutnya
-**Yang perlu ditempel:** `resources/views/payments/show.blade.php`, `public/css/pembayaran.css` (bagian pesan/galat saja, `grep -n "pesan\|galat" public/css/pembayaran.css`), dan 30 baris pertama `tests/Feature/PaymentTest.php`. Tes baru wajib: alasan tampil saat `rejection_reason` terisi dan status `menunggu_pembayaran`.
-
-### Langkah E2 — setelahnya
+### Langkah E2 — berikutnya
 Usul default: nonaktifkan lapangan **tidak** membatalkan booking yang sudah ada; hanya menutup pemesanan baru. Gunakan `FieldPolicy` dan `FieldRequest`, controller `Admin/FieldController`, CSS sendiri (aturan 17), rute di grup `admin.` (misalnya `admin.fields.index`).
 **Yang perlu ditempel:** `app/Models/Field.php`, `app/Http/Controllers/FieldController.php`, `routes/web.php` (versi terbaru setelah Pint), `app/Providers/AppServiceProvider.php`, `database/seeders/DatabaseSeeder.php` (bagian lapangan), serta `prototipe-statis/webnya/admin-lapangan.html` dan js-nya (cek nama dengan `ls prototipe-statis/webnya/js`).

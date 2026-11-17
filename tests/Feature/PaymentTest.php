@@ -278,4 +278,28 @@ class PaymentTest extends TestCase
             ])
             ->assertRedirect($this->urlShow(Booking::query()->latest('id')->firstOrFail()));
     }
+
+    public function test_alasan_penolakan_tampil_saat_kembali_ke_menunggu_pembayaran(): void
+    {
+        $pelanggan = $this->buatPelanggan();
+        $booking = $this->buatBooking($pelanggan, Booking::STATUS_MENUNGGU_PEMBAYARAN, [
+            'rejection_reason' => 'Foto buram dan nominal tidak terbaca',
+        ]);
+
+        $this->actingAs($pelanggan)->get($this->urlShow($booking))
+            ->assertOk()
+            ->assertSee('Bukti pembayaran sebelumnya ditolak')
+            ->assertSee('Foto buram dan nominal tidak terbaca')
+            ->assertSee('Kirim Bukti Pembayaran');
+    }
+
+    public function test_pemberitahuan_penolakan_tidak_tampil_bila_belum_pernah_ditolak(): void
+    {
+        $pelanggan = $this->buatPelanggan();
+        $booking = $this->buatBooking($pelanggan);
+
+        $this->actingAs($pelanggan)->get($this->urlShow($booking))
+            ->assertOk()
+            ->assertDontSee('Bukti pembayaran sebelumnya ditolak');
+    }
 }

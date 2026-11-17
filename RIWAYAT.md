@@ -92,3 +92,7 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - View `admin/bookings/index` memakai ulang `riwayat.css` + `admin-booking.css`. Aksi tolak memakai kolom teks alasan di baris tabel (tanpa JavaScript).
 - Tes baru: `AdminBookingTest` (13 tes). Total 104 -> 117.
 - Belum dicek di browser. Belum ada: `rejection_reason` tampil di halaman pembayaran pelanggan.
+## Langkah E1b — Alasan penolakan di halaman pembayaran (17 Nov 2026)
+- `payments/show.blade.php`: pada tahap `bayar`, bila `rejection_reason` terisi, tampil kotak `.pembayaran-galat` berisi "Bukti pembayaran sebelumnya ditolak" dan alasannya. Tanpa CSS baru.
+- `PaymentTest`: +2 tes (alasan tampil; tidak tampil bila belum pernah ditolak).
+- Belum dicek browser.

@@ -26,6 +26,12 @@
         <div class="pembayaran-grid">
             <div class="pembayaran-utama">
                 @if ($tahap === 'bayar')
+                    @if ($booking->rejection_reason)
+                        <div class="pembayaran-galat">
+                            <strong>Bukti pembayaran sebelumnya ditolak.</strong>
+                            Alasan: {{ $booking->rejection_reason }}. Silakan unggah bukti yang baru sebelum waktu habis.
+                        </div>
+                    @endif
                     <section class="kartu-bayar">
                         <div class="kartu-bayar-kepala">
                             <h1 class="judul-bayar">Transfer manual</h1>
