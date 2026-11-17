@@ -111,3 +111,10 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - Tidak ada hapus lapangan (hanya nonaktif).
 
 **Belum teruji:** tampilan di browser (daftar cek di percakapan E2), unggah foto sungguhan, symlink storage.
+## Langkah G1 (17 Nov 2026) — layout admin dengan sidebar
+- Komponen baru: `x-admin-layout`, `x-admin-sisi`, `public/css/admin-layout.css`, `tests/Feature/AdminLayoutTest.php` (3 tes). Tiga view admin (`bookings/index`, `fields/index`, `fields/form`) dipindah dari `x-app-layout` ke `x-admin-layout`. Tes: 135 passed.
+- Sidebar: menu hanya tampil bila rutenya ada (`Route::has`); Dashboard, Kelola User, Laporan belum ada rutenya. Menu geser di layar sempit pakai Alpine.
+- Temuan pemilik (screenshot prototipe + tampilan sekarang): tautan "Panel Admin" dan "Kelola Lapangan" masih ada di navbar publik; desain panel admin, kelola booking, dan kelola lapangan dinilai jelek; sidebar harus mirip prototipe; dashboard dan laporan belum ada.
+- Diputuskan di chat: laporan tidak butuh tabel baru (dihitung dari `bookings.date`); diagram SVG dihitung di server (tanpa paket JS); CSV pemisah `;` + BOM UTF-8.
+- `admin-laporan.js` prototipe hanya memakai bulan berjalan; tab minggu/bulan/tahun/kustom dibuat baru.
+- Belum dicek di browser oleh Claude; jawaban pemilik atas pertanyaan pola diagram belum ada (default dipakai).
