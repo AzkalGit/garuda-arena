@@ -14,11 +14,11 @@ class DatabaseSeeder extends Seeder
     use WithoutModelEvents;
 
     // Kata sandi demo SEMENTARA. Ganti sendiri; jangan dipakai di server publik.
-    private const DEMO_PASSWORD = 'GantiSandi#2026';
+    private const DEMO_PASSWORD = 'admin123';
 
     public function run(): void
     {
-        $admin = $this->buatUser('Admin Garuda', 'admin@garudaarena.test', '081200000001', User::ROLE_ADMIN);
+        $admin = $this->buatUser('Admin Garuda', 'admin@g', '081200000001', User::ROLE_ADMIN);
         $andi = $this->buatUser('Andi Pratama', 'andi@garudaarena.test', '081200000002', User::ROLE_PELANGGAN);
         $sari = $this->buatUser('Sari Wulandari', 'sari@garudaarena.test', '081200000003', User::ROLE_PELANGGAN);
         $budi = $this->buatUser('Budi Santoso', 'budi@garudaarena.test', '081200000004', User::ROLE_PELANGGAN);
