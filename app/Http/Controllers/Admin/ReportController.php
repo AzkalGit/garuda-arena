@@ -164,35 +164,6 @@ class ReportController extends Controller
             $bandingKelas = $persen > 0 ? 'laporan-naik' : ($persen < 0 ? 'laporan-turun' : '');
         }
 
-        // Tren: per hari bila rentang <= 31 hari, selain itu per bulan.
-        $perHari = $sampai->lte($dari->copy()->addDays(30));
-        $tujuhHari = $sampai->lte($dari->copy()->addDays(6));
-        $satuTahun = $dari->year === $sampai->year;
-
-        $hitungTren = $bookings->countBy(
-            fn (Booking $b) => $perHari ? $b->date->toDateString() : $b->date->format('Y-m')
-        );
-
-        $grafik = [];
-        $kursor = $perHari ? $dari->copy() : $dari->copy()->startOfMonth();
-
-        while ($kursor->lte($sampai)) {
-            $kunci = $perHari ? $kursor->toDateString() : $kursor->format('Y-m');
-
-            if ($perHari) {
-                $label = $tujuhHari
-                    ? $kursor->copy()->locale('id')->translatedFormat('D j')
-                    : $kursor->format('j');
-            } else {
-                $label = $kursor->copy()->locale('id')->translatedFormat($satuTahun ? 'M' : 'M y');
-            }
-
-            $grafik[] = ['label' => $label, 'nilai' => (int) ($hitungTren[$kunci] ?? 0)];
-
-            $perHari ? $kursor->addDay() : $kursor->addMonthNoOverflow();
-        }
-
-        // Label periode.
         if ($periode === 'bulan') {
             $periodeLabel = $dari->copy()->locale('id')->translatedFormat('F Y');
         } elseif ($periode === 'tahun') {
@@ -239,8 +210,6 @@ class ReportController extends Controller
             'acuan' => $acuan->toDateString(),
             'tab' => $tab,
             'kartu' => $kartu,
-            'grafik' => $grafik,
-            'grafikJudul' => $perHari ? 'Booking per hari' : 'Booking per bulan',
             'baris' => $baris,
             'totalBaris' => [
                 'jumlah' => $total,

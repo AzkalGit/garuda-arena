@@ -58,11 +58,6 @@
         </div>
 
         <section class="dashboard-panel laporan-panel">
-            <h2 class="dashboard-panel-judul">{{ $grafikJudul }}</h2>
-            <x-grafik-batang :data="$grafik" :judul="$grafikJudul" />
-        </section>
-
-        <section class="dashboard-panel laporan-panel">
             <h2 class="dashboard-panel-judul">Per lapangan</h2>
 
             <div class="admin-tabel-bungkus">

@@ -138,28 +138,19 @@ class ReportAdminTest extends TestCase
             ->get('/admin/laporan?periode=minggu&tanggal=2026-11-20')
             ->assertOk()
             ->assertSee('Rp 380.000')
-            ->assertViewHas('grafik', function (array $grafik) {
-                return count($grafik) === 7
-                    && $grafik[0]['nilai'] === 0
-                    && $grafik[2]['nilai'] === 1
-                    && $grafik[3]['nilai'] === 0
-                    && $grafik[4]['nilai'] === 1;
-            });
+            ->assertViewHas('dari', '2026-11-16')
+            ->assertViewHas('sampai', '2026-11-22');
     }
 
-    public function test_tahun_dihitung_per_bulan(): void
+    public function test_tahun_mencakup_satu_tahun_penuh(): void
     {
         $this->isiData();
 
         $this->actingAs($this->buatAdmin())
             ->get('/admin/laporan?periode=tahun&tanggal=2026-11-20')
             ->assertOk()
-            ->assertViewHas('grafikJudul', 'Booking per bulan')
-            ->assertViewHas('grafik', function (array $grafik) {
-                return count($grafik) === 12
-                    && $grafik[9]['nilai'] === 1
-                    && $grafik[10]['nilai'] === 3;
-            });
+            ->assertViewHas('dari', '2026-01-01')
+            ->assertViewHas('sampai', '2026-12-31');
     }
 
     public function test_kustom_memakai_rentang_dari_dan_sampai(): void
@@ -170,7 +161,8 @@ class ReportAdminTest extends TestCase
             ->get('/admin/laporan?periode=kustom&dari=2026-11-18&sampai=2026-11-20')
             ->assertOk()
             ->assertSee('Rp 380.000')
-            ->assertViewHas('grafik', fn (array $grafik) => count($grafik) === 3);
+            ->assertViewHas('dari', '2026-11-18')
+            ->assertViewHas('sampai', '2026-11-20');
     }
 
     public function test_kustom_dengan_dari_setelah_sampai_dirapikan(): void
@@ -181,7 +173,18 @@ class ReportAdminTest extends TestCase
             ->get('/admin/laporan?periode=kustom&dari=2026-11-20&sampai=2026-11-10')
             ->assertOk()
             ->assertViewHas('sampai', '2026-11-20')
-            ->assertViewHas('grafik', fn (array $grafik) => count($grafik) === 1);
+            ->assertViewHas('dari', '2026-11-20');
+    }
+
+    public function test_laporan_tidak_menampilkan_grafik(): void
+    {
+        $this->isiData();
+
+        $this->actingAs($this->buatAdmin())
+            ->get('/admin/laporan?periode=bulan&tanggal=2026-11-20')
+            ->assertOk()
+            ->assertViewMissing('grafik')
+            ->assertDontSee('Booking per hari');
     }
 
     public function test_masukan_tidak_valid_diabaikan(): void
