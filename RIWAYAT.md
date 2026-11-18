@@ -140,3 +140,12 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - Tes baru `ReportAdminTest` (12 tes). Total 155 passed.
 - Kendala: route sempat belum tertempel, sehingga 12 tes gagal (404). Setelah ditambahkan, semua lulus.
 - Belum dicek di browser.
+### G3b: laporan tanpa grafik tren (18 Nov 2026)
+- Grafik tren dibuang dari `/admin/laporan`: blok `grafik`/`grafikJudul` di `ReportController::susun()` dan panel grafik di view dihapus. Dashboard tetap punya grafik 7 hari.
+- `ReportAdminTest`: tes grafik diganti pemeriksaan `dari`/`sampai`; ditambah `test_laporan_tidak_menampilkan_grafik`. Tes 155 → 156.
+
+### G4: Kelola pengguna (18 Nov 2026)
+- Rute `GET /admin/pengguna` (`admin.users.index`), `Admin/UserController::index` (invokasi `Gate::authorize('kelola', User::class)`), `UserPolicy::kelola` (admin saja, selain itu 403).
+- Daftar semua user: pencarian nama/email (`?q=`), admin diurutkan di atas, kolom peran, jumlah booking (`withCount`), tanggal bergabung. Tanpa hapus dan tanpa ubah peran.
+- `User::peranLabel()` dan `User::bergabungLabel()`. CSS baru `public/css/admin-pengguna.css` (`.lencana-peran*`). Sidebar menampilkan menu Pengguna otomatis lewat `Route::has`.
+- `UserAdminTest` (6 tes). Tes 156 → 162 passed. Belum dicek browser.
