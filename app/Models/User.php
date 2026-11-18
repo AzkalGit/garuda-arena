@@ -44,4 +44,16 @@ class User extends Authenticatable
     {
         return $this->role === self::ROLE_ADMIN;
     }
+
+    public function peranLabel(): string
+    {
+        return $this->isAdmin() ? 'Admin' : 'Pelanggan';
+    }
+
+    public function bergabungLabel(): string
+    {
+        return $this->created_at
+            ? $this->created_at->locale('id')->translatedFormat('j M Y')
+            : '-';
+    }
 }
