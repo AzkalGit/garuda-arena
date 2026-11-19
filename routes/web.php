@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\FieldController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymentController;
@@ -17,6 +18,8 @@ Route::get('/', HomeController::class)->name('home');
 
 Route::get('/lapangan', [FieldController::class, 'index'])->name('lapangan.index');
 Route::get('/lapangan/{field}', [FieldController::class, 'show'])->name('lapangan.show');
+
+Route::get('/galeri', [GalleryController::class, 'index'])->name('galeri.index');
 
 Route::middleware('auth')->group(function () {
     Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');

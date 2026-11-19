@@ -3,7 +3,7 @@
         ['Beranda', route('home'), request()->routeIs('home')],
         ['Daftar Lapangan', route('lapangan.index'), request()->routeIs('lapangan.*')],
         ['Fasilitas', route('home').'#features', false],
-        ['Galeri', route('home').'#gallery', false],
+        ['Galeri', route('galeri.index'), request()->routeIs('galeri.*')],
         ['Kontak', route('home').'#contact', false],
     ];
     if (auth()->check() && ! auth()->user()->isAdmin() && Route::has('riwayat.index')) {

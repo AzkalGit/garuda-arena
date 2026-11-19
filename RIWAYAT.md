@@ -168,3 +168,13 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - **Tes:** `IkonFasilitasTest` ada; total **170 passed** (587 assertions). Isi berkas tes belum dilihat sesi ini.
 - **Belum teruji:** tampilan di browser (kartu `/lapangan`, chip di detail, layar sempit). Baris 59 `show.blade.php` kurang rapi (`</span>` dan `@endforeach` satu baris), tidak mempengaruhi tampilan.
 - **Pelajaran:** tulis catatan serah-terima segera setelah commit langkah.
+
+## H2 — Halaman Galeri (19 Nov 2026)
+
+- **Baru:** `GalleryController@index` (rute `GET /galeri`, nama `galeri.index`), `resources/views/galeri/index.blade.php`, `public/css/galeri.css`, `tests/Feature/GaleriTest.php` (6 tes).
+- **Diubah:** `routes/web.php` (use + rute), `layouts/navigation.blade.php` (menu "Galeri" kini ke `galeri.index`, bukan `home#gallery`; bagian `#gallery` di beranda tidak disentuh).
+- **Perilaku:** hanya lapangan `aktif`; filter `?jenis=` lewat tab (nilai tak dikenal atau array diabaikan); data (nama, lokasi, jenis, foto) disiapkan di controller; klik foto = tampilan besar Alpine (`x-show` + `x-cloak`, tutup lewat tombol ×, Esc, klik latar); animasi `muncul-naik` + `prefers-reduced-motion`. Tanpa tabel baru.
+- **Hasil:** tes **176 passed** (606 assertions). CSS 267 baris, `{` = `}` (42). Cek bersih view kosong.
+- **Belum teruji:** tampilan browser (grid 1/2/3 kolom, tampilan besar, hover, menu aktif di navbar dan hamburger).
+- **Insiden:** setelah tes pertama 41 gagal, karena `use GalleryController` sudah masuk tetapi baris rute belum; Pint lalu membuang `use` yang tak terpakai sehingga `routes/web.php` kembali ke versi lama dan navbar memanggil rute yang tidak ada. Diperbaiki dengan menempel use + rute sekaligus sebelum Pint.
+- **Pelajaran:** perubahan `routes/web.php` yang terdiri dari `use` + rute harus ditempel keduanya sebelum Pint; verifikasi `grep -c` dan ` M` dulu, baru Pint dan tes.
