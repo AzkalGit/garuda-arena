@@ -159,3 +159,12 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - **Keputusan baru:** galeri = foto saja + nama tempat; ulasan + rating dibuat (membalik "tanpa ulasan"); animasi CSS saja; ikon fasilitas dipetakan lewat kata kunci. Urutan H1 (ikon fasilitas + animasi), H2 (galeri), H3 (ulasan), F2.
 - **Belum teruji:** tampilan login/daftar dan ikon sidebar baru di browser; galat login masih bahasa Inggris; email admin seeder masih `admin@g`.
 - **Pelajaran:** angka `wc -l`/`grep -c` di serahan hanyalah perkiraan (`grep -c` menghitung baris, bukan kemunculan).
+
+## H1 — Ikon fasilitas + animasi CSS (19 Nov 2026)
+
+- **Temuan:** H1 sudah dikerjakan dan di-commit (`8e82afa`) sebelum sesi ini, tetapi belum tercatat (pola yang sama dengan G2 dan G3b). Ditemukan lewat `git status --short` kosong, tes 170 (bukan 165), dan `<x-ikon-fasilitas>` sudah dipakai di view.
+- **Ada:** `components/ikon-fasilitas.blade.php` (prop `nama`; 12 ikon SVG inline dipetakan lewat kata kunci: wifi, parkir, toilet, shower, kantin, musala, ac, locker, streaming, tribun, skor, cahaya; tak dikenal = centang; atribut `data-ikon` memuat kunci). Dipakai di `field-card.blade.php` dan `fields/show.blade.php`.
+- **CSS:** blok "Ikon dan animasi" di `katalog.css` (hover kartu naik + foto membesar, muncul `muncul-naik` dengan jeda bertahap, `prefers-reduced-motion`) dan `detail.css` (chip fasilitas, kartu detail muncul halus, `prefers-reduced-motion`). `garuda.css` tidak diubah.
+- **Tes:** `IkonFasilitasTest` ada; total **170 passed** (587 assertions). Isi berkas tes belum dilihat sesi ini.
+- **Belum teruji:** tampilan di browser (kartu `/lapangan`, chip di detail, layar sempit). Baris 59 `show.blade.php` kurang rapi (`</span>` dan `@endforeach` satu baris), tidak mempengaruhi tampilan.
+- **Pelajaran:** tulis catatan serah-terima segera setelah commit langkah.
