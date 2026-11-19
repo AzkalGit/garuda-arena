@@ -149,3 +149,13 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - Daftar semua user: pencarian nama/email (`?q=`), admin diurutkan di atas, kolom peran, jumlah booking (`withCount`), tanggal bergabung. Tanpa hapus dan tanpa ubah peran.
 - `User::peranLabel()` dan `User::bergabungLabel()`. CSS baru `public/css/admin-pengguna.css` (`.lencana-peran*`). Sidebar menampilkan menu Pengguna otomatis lewat `Route::has`.
 - `UserAdminTest` (6 tes). Tes 156 → 162 passed. Belum dicek browser.
+
+## H0 — Logo bola, ikon sidebar solid, login/daftar (19 Nov 2026)
+
+- **Temuan gladi F2:** pemilik membandingkan panel admin proyek dengan prototipe: logo masih lingkaran (bukan bola futsal), ikon sidebar outline (prototipe solid), urutan menu beda, logo Breeze masih tampil di halaman publik, login/daftar belum didesain. Ukuran menu ternyata sama dengan prototipe (`text-sm`, `py-3`, `w-64`), jadi CSS sidebar tidak diubah.
+- **Diubah:** `components/admin-sisi.blade.php` (logo bola `$bola`, lima ikon solid SVG inline, urutan Dashboard, Lapangan, Booking, User, Laporan); `components/application-logo.blade.php` (kotak Breeze diganti bola futsal, atribut `class` pemanggil tetap diteruskan).
+- **Baru:** `components/auth-layout.blade.php`, `public/css/auth.css`, `tests/Feature/AuthTampilanTest.php` (3 tes). **Ditulis ulang:** `auth/login.blade.php`, `auth/register.blade.php` (Bahasa Indonesia, galat via `@error`, tanpa akun demo, tanpa tombol sosial palsu). `layouts/guest.blade.php` sengaja tidak diubah.
+- **Hasil:** tes **165 passed** (573 assertions). Jumlah `{` = `}` di `auth.css` (33). Pint merapikan satu baris kosong di akhir tes.
+- **Keputusan baru:** galeri = foto saja + nama tempat; ulasan + rating dibuat (membalik "tanpa ulasan"); animasi CSS saja; ikon fasilitas dipetakan lewat kata kunci. Urutan H1 (ikon fasilitas + animasi), H2 (galeri), H3 (ulasan), F2.
+- **Belum teruji:** tampilan login/daftar dan ikon sidebar baru di browser; galat login masih bahasa Inggris; email admin seeder masih `admin@g`.
+- **Pelajaran:** angka `wc -l`/`grep -c` di serahan hanyalah perkiraan (`grep -c` menghitung baris, bukan kemunculan).
