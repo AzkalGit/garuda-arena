@@ -88,6 +88,63 @@
     border-color: var(--hijau);
 }
 
+/* ---------- Ikon dan animasi kartu ---------- */
+.ikon-fasilitas {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+}
+
+.kartu-fasilitas .lencana-fasilitas {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.kartu-foto {
+    overflow: hidden;
+}
+
+.kartu-foto img {
+    transition: transform 0.4s ease;
+}
+
+.kartu-lapangan {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    animation: muncul-naik 0.5s ease both;
+}
+
+.kartu-lapangan:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15);
+}
+
+.kartu-lapangan:hover .kartu-foto img {
+    transform: scale(1.05);
+}
+
+.grid-katalog > :nth-child(2) { animation-delay: 0.08s; }
+.grid-katalog > :nth-child(3) { animation-delay: 0.16s; }
+.grid-katalog > :nth-child(4) { animation-delay: 0.24s; }
+
+@keyframes muncul-naik {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kartu-lapangan,
+    .kartu-foto img {
+        animation: none;
+        transition: none;
+    }
+
+    .kartu-lapangan:hover,
+    .kartu-lapangan:hover .kartu-foto img {
+        transform: none;
+    }
+}
+
 /* ---------- Hasil ---------- */
 .katalog-jumlah {
     margin: 1.5rem 0 1rem;

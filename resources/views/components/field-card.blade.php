@@ -12,7 +12,7 @@
         <h3 class="kartu-nama">{{ $field->name }}</h3>
         <div class="kartu-fasilitas">
             @foreach (collect($field->facilities)->take(3) as $fasilitas)
-                <span class="lencana-fasilitas">{{ $fasilitas }}</span>
+            <span class="lencana-fasilitas"><x-ikon-fasilitas :nama="$fasilitas" /> {{ $fasilitas }}</span>
             @endforeach
             @if ($field->isActive())
                 <span class="lencana-tersedia">Tersedia</span>

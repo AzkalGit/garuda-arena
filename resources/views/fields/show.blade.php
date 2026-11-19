@@ -56,8 +56,7 @@
                     <h2 class="detail-subjudul">Fasilitas Tersedia</h2>
                     <div class="daftar-fasilitas">
                         @foreach ($fasilitas as $item)
-                            <span class="chip-fasilitas">✓ {{ $item }}</span>
-                        @endforeach
+                            <span class="chip-fasilitas"><x-ikon-fasilitas :nama="$item" /> {{ $item }}</span>                        @endforeach
                     </div>
                 </div>
             </div>
