@@ -1,4 +1,8 @@
 <x-app-layout>
+    <x-slot name="head">
+        <link rel="stylesheet" href="{{ asset('css/beranda.css') }}">
+    </x-slot>
+
     <section class="hero">
         <div class="wadah hero-isi">
             <div class="hero-teks">
@@ -34,19 +38,49 @@
         </div>
     </section>
 
+    <section class="wadah cek-cepat">
+        <div class="cek-kartu">
+            <h2 class="cek-judul">
+                <svg class="cek-ikon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M13 2L4 14h6l-1 8 9-12h-6z"/>
+                </svg>
+                Cek Ketersediaan Cepat
+            </h2>
+            <form method="GET" action="{{ route('home') }}" class="cek-form">
+                <div>
+                    <label for="cek-lapangan" class="cek-label">Pilih Lapangan</label>
+                    <select id="cek-lapangan" name="lapangan" class="cek-input">
+                        <option value="semua">Semua Lapangan</option>
+                        @foreach ($daftarLapangan as $lapangan)
+                            <option value="{{ $lapangan->id }}">{{ $lapangan->name }} ({{ $lapangan->typeLabel() }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="cek-tanggal" class="cek-label">Tanggal Main</label>
+                    <input type="date" id="cek-tanggal" name="tanggal" value="{{ $hariIni }}" min="{{ $hariIni }}" class="cek-input" required>
+                </div>
+                <div class="cek-tombol-bungkus">
+                    <button type="submit" class="cek-tombol">Cek &amp; Booking</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
     <section class="wadah seksi">
-        <div class="seksi-kepala sebaris">
-            <div>
-                <span class="label-seksi">Pilihan Lapangan</span>
-                <h2 class="judul-seksi">Lapangan Favorit</h2>
-            </div>
-            <a href="{{ route('lapangan.index') }}" class="link-semua">Lihat semua lapangan →</a>
+        <div class="seksi-kepala">
+            <span class="label-seksi">Pilihan Lapangan</span>
+            <h2 class="judul-seksi">Lapangan Favorit</h2>
         </div>
 
         <div class="grid-kartu">
             @foreach ($unggulan as $field)
                 <x-field-card :field="$field" />
             @endforeach
+        </div>
+
+        <div class="bawah-daftar">
+            <a href="{{ route('lapangan.index') }}" class="tombol-hijau tombol-selengkapnya">Lihat Selengkapnya →</a>
         </div>
     </section>
 

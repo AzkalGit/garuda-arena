@@ -183,3 +183,8 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - `ReviewTest` (9 tes) dan `RiwayatUlasanTest` (5 tes) diperbarui: tes "belum selesai" diganti "belum dibayar" (`menunggu_verifikasi`); ditambah `test_booking_dikonfirmasi_yang_belum_dimainkan_bisa_diulas` dan `test_booking_dikonfirmasi_menampilkan_form_ulasan`.
 - Tidak ada perubahan di view, CSS, atau seeder. `A1B1` (Andi) dan `C3D3` (Budi) otomatis bisa diulas karena berstatus `dikonfirmasi`.
 - Hasil: **194 passed (683 assertions)**. Browser belum dicek.
+### H3b — data demo ulasan + "Lihat selengkapnya" (22 Nov 2026)
+- Seeder: +3 pelanggan (Rina, Dewi, Fajar), +31 ulasan demo (tiap ulasan punya booking `selesai` sendiri, kode `U001`..`U031`); `hitungUlangRating()` menghitung `rating` dan `reviews_count` semua lapangan dari tabel `reviews` (VIP 8, Merdeka 5, Champions 6, Rencong 3, Seulawah 3, Lampuuk 2, Peunayong 4, Krueng 3 = 34 ulasan).
+- Detail lapangan: 5 ulasan terbaru; bila lebih dari 5 muncul tautan "Lihat selengkapnya (N ulasan)" (`?ulasan=semua#ulasan`) dan "Tampilkan lebih sedikit"; judul kartu memuat jumlah ulasan. Tanpa JavaScript. CSS ditambah di `ulasan.css`.
+- Tes: `DetailUlasanTest` jadi 7 tes (tombol hanya bila > 5, tampil semua lewat parameter, seeder cocok dengan angka lapangan); `FondasiTest` pelanggan seeder 3 → 6. Pelajaran: lapangan uji senama dengan lapangan seeder harus dihapus sebelum `seed`.
+- Hasil: **197 passed (706 assertions)**. Browser belum dicek.

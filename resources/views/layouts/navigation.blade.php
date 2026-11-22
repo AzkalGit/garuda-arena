@@ -24,8 +24,13 @@
         <div class="navbar-baris">
             <div class="navbar-kiri">
                 <a href="{{ route('home') }}" class="navbar-logo">
-                    <x-application-logo class="logo-navbar" />
-                    <span class="navbar-nama">Garuda Arena</span>
+                    <span class="logo-kotak">
+                        <x-application-logo class="logo-navbar" />
+                    </span>
+                    <span class="navbar-teks">
+                        <span class="navbar-nama">Garuda Arena</span>
+                        <span class="navbar-sub">FUTSAL &amp; SPORT</span>
+                    </span>
                 </a>
 
                 <div class="menu-desktop">
