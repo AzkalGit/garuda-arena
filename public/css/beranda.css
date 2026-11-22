@@ -104,3 +104,185 @@
     .cek-kartu { padding: 2rem; }
     .cek-form { grid-template-columns: 2fr 1.5fr 1fr; }
 }
+
+
+/* ---------- H4b: hero melengkung, kartu hero, ikon keunggulan, jarak galeri ---------- */
+.hero {
+    background: linear-gradient(135deg, var(--hijau-tua) 0%, var(--hijau) 100%);
+    border-bottom-left-radius: 50% 40px;
+    border-bottom-right-radius: 50% 40px;
+    padding-bottom: 3rem;
+}
+
+.cek-cepat {
+    margin-top: -3rem;
+}
+
+.hero-gambar {
+    position: relative;
+}
+
+.hero-kartu {
+    padding: 0.75rem;
+    background: #fff;
+    color: var(--teks);
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transform: rotate(1deg);
+    transition: transform 0.5s ease;
+}
+
+.hero-gambar:hover .hero-kartu {
+    transform: rotate(0deg);
+}
+
+.hero-kartu .hero-foto {
+    height: 16rem;
+    border-radius: 1rem;
+    box-shadow: none;
+}
+
+.hero-kartu-bawah {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem 0.5rem 0.5rem;
+}
+
+.hero-kartu-nama {
+    margin: 0;
+    font-family: var(--font-judul);
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.hero-kartu-info {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0.25rem 0 0;
+    font-size: 0.75rem;
+    color: var(--abu-500);
+}
+
+.hero-kartu-pin {
+    width: 0.875rem;
+    height: 0.875rem;
+    flex-shrink: 0;
+    fill: var(--hijau);
+}
+
+.hero-lencana-rating {
+    position: absolute;
+    top: -1.25rem;
+    right: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #fff;
+    color: var(--teks);
+    border: 1px solid var(--garis);
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+    transition: transform 0.5s ease;
+}
+
+.hero-gambar:hover .hero-lencana-rating {
+    transform: translateY(-4px);
+}
+
+.hero-lencana-ikon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    background: var(--hijau-100);
+    color: var(--hijau);
+    border-radius: 9999px;
+}
+
+.hero-lencana-ikon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: currentColor;
+}
+
+.hero-lencana-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--abu-500);
+}
+
+.hero-lencana-nilai {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.seksi-fasilitas {
+    padding-bottom: 1rem;
+}
+
+.seksi-galeri {
+    padding-top: 1rem;
+}
+
+.kartu-keunggulan {
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.kartu-keunggulan:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px -10px rgba(21, 128, 61, 0.25);
+}
+
+.keunggulan-ikon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto 1.25rem;
+    background: var(--hijau-muda);
+    color: var(--hijau);
+    border-radius: 1rem;
+}
+
+.ikon-keunggulan {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+@media (min-width: 768px) {
+    .hero {
+        border-bottom-left-radius: 50% 80px;
+        border-bottom-right-radius: 50% 80px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-lencana-rating {
+        top: -1.5rem;
+        right: -1.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-kartu,
+    .hero-lencana-rating,
+    .kartu-keunggulan {
+        transition: none;
+    }
+
+    .hero-kartu,
+    .hero-gambar:hover .hero-lencana-rating,
+    .kartu-keunggulan:hover {
+        transform: none;
+    }
+}

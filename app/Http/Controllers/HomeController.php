@@ -24,8 +24,14 @@ class HomeController extends Controller
             ->take(3)
             ->get();
 
+        $hero = Field::where('status', Field::STATUS_AKTIF)
+            ->orderByDesc('reviews_count')
+            ->orderBy('id')
+            ->first();
+
         return view('home', [
             'unggulan' => $unggulan,
+            'hero' => $hero,
             'daftarLapangan' => Field::where('status', Field::STATUS_AKTIF)->orderBy('id')->get(),
             'hariIni' => Carbon::today()->toDateString(),
             'jumlahAktif' => Field::where('status', Field::STATUS_AKTIF)->count(),
@@ -33,10 +39,10 @@ class HomeController extends Controller
             'jamTutup' => sprintf('%02d.00', (int) config('garuda.close_hour')),
             'batasBayar' => (int) config('garuda.pay_window_minutes'),
             'fasilitas' => [
-                ['judul' => 'Cek Jadwal Langsung', 'teks' => 'Pilih tanggal, jam, dan durasi. Sistem memeriksa bentrok jadwal otomatis.'],
-                ['judul' => 'Bayar Lewat Transfer', 'teks' => 'Unggah bukti transfer, lalu admin memverifikasi pesananmu.'],
-                ['judul' => 'Tiga Jenis Lantai', 'teks' => 'Interlock, rumput sintetis, dan vinyl sesuai gaya mainmu.'],
-                ['judul' => 'Fasilitas Lengkap', 'teks' => 'Parkir luas, kantin, ruang ganti, dan pencahayaan malam.'],
+                ['ikon' => 'jadwal', 'judul' => 'Cek Jadwal Langsung', 'teks' => 'Pilih tanggal, jam, dan durasi. Sistem memeriksa bentrok jadwal otomatis.'],
+                ['ikon' => 'transfer', 'judul' => 'Bayar Lewat Transfer', 'teks' => 'Unggah bukti transfer, lalu admin memverifikasi pesananmu.'],
+                ['ikon' => 'lantai', 'judul' => 'Tiga Jenis Lantai', 'teks' => 'Interlock, rumput sintetis, dan vinyl sesuai gaya mainmu.'],
+                ['ikon' => 'fasilitas', 'judul' => 'Fasilitas Lengkap', 'teks' => 'Parkir luas, kantin, ruang ganti, dan pencahayaan malam.'],
             ],
             'galeri' => [
                 ['file' => 'images/5-galeri-kantin.jpg', 'alt' => 'Kantin Garuda Arena'],
