@@ -477,5 +477,4 @@
     .detail-grid { grid-template-columns: repeat(3, 1fr); }
     .detail-kiri { grid-column: span 2; }
     .detail-kanan { grid-column: span 1; }
-    .kartu-booking { position: sticky; top: 7rem; }
 }
