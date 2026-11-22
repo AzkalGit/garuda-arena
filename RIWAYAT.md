@@ -188,3 +188,11 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - Detail lapangan: 5 ulasan terbaru; bila lebih dari 5 muncul tautan "Lihat selengkapnya (N ulasan)" (`?ulasan=semua#ulasan`) dan "Tampilkan lebih sedikit"; judul kartu memuat jumlah ulasan. Tanpa JavaScript. CSS ditambah di `ulasan.css`.
 - Tes: `DetailUlasanTest` jadi 7 tes (tombol hanya bila > 5, tampil semua lewat parameter, seeder cocok dengan angka lapangan); `FondasiTest` pelanggan seeder 3 → 6. Pelajaran: lapangan uji senama dengan lapangan seeder harus dihapus sebelum `seed`.
 - Hasil: **197 passed (706 assertions)**. Browser belum dicek.
+## H4 (sebagian) — Hero beranda (22 Nov 2026)
+- `HomeController` menyiapkan `$hero`; `home.blade.php` memuat hero dengan `.hero-lencana-rating`; komponen baru `x-ikon-keunggulan`; `public/css/beranda.css` (287 baris) diperluas; tes baru `BerandaHeroTest` (58 baris).
+- Tes: 207 passed (736 assertions).
+- Belum terkonfirmasi (periksa dengan grep/git show): kartu "Cek Ketersediaan Cepat", tombol "Lihat Selengkapnya", logo kotak hijau + "FUTSAL & SPORT".
+- Belum dicek browser.
+
+## Perbaikan detail lapangan (22 Nov 2026)
+- `detail.css`: baris `.kartu-booking { position: sticky; top: 7rem; }` dihapus agar panel pemilihan jam ikut ter-scroll bersama halaman. Sudah dicek pemilik di browser.
