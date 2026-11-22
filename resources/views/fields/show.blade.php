@@ -1,6 +1,7 @@
 <x-app-layout>
     <x-slot name="head">
         <link rel="stylesheet" href="{{ asset('css/detail.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/ulasan.css') }}">
     </x-slot>
 
     <x-slot name="header">
@@ -56,8 +57,33 @@
                     <h2 class="detail-subjudul">Fasilitas Tersedia</h2>
                     <div class="daftar-fasilitas">
                         @foreach ($fasilitas as $item)
-                            <span class="chip-fasilitas"><x-ikon-fasilitas :nama="$item" /> {{ $item }}</span>                        @endforeach
+                            <span class="chip-fasilitas"><x-ikon-fasilitas :nama="$item" /> {{ $item }}</span>
+                        @endforeach
                     </div>
+                </div>
+
+                <div class="kartu-detail longgar">
+                    <h2 class="detail-subjudul">Ulasan Pelanggan</h2>
+                    @forelse ($ulasan as $butir)
+                        @if ($loop->first)
+                            <ul class="ulasan-daftar">
+                        @endif
+
+                        <li class="ulasan-butir">
+                            <div class="ulasan-kepala">
+                                <span class="ulasan-nama">{{ $butir->user->name }}</span>
+                                <span class="ulasan-bintang" aria-label="Rating {{ $butir->rating }} dari 5">{{ $butir->bintangLabel() }}</span>
+                                <span class="ulasan-tanggal">{{ $butir->tanggalLabel() }}</span>
+                            </div>
+                            <p class="ulasan-isi">{{ $butir->comment }}</p>
+                        </li>
+
+                        @if ($loop->last)
+                            </ul>
+                        @endif
+                    @empty
+                        <p class="ulasan-kosong">Belum ada ulasan untuk lapangan ini.</p>
+                    @endforelse
                 </div>
             </div>
 

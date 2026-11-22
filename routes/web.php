@@ -12,6 +12,7 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -29,6 +30,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/riwayat', [HistoryController::class, 'index'])->name('riwayat.index');
     Route::post('/riwayat/{booking:code}/batal', [HistoryController::class, 'batal'])->name('riwayat.batal');
+    Route::post('/riwayat/{booking:code}/ulasan', [ReviewController::class, 'store'])->name('riwayat.ulasan');
 
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', AdminDashboardController::class)->name('dashboard');

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Booking;
 use App\Models\Field;
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -57,7 +58,40 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Selesai
+        // Booking Sari (L2M2) sengaja belum diulas: dipakai untuk demo menulis ulasan langsung.
         $this->buatBooking($sari, $lapangan[0], $kemarin, 19, 2, Booking::STATUS_SELESAI, 'L2M2', $konfirmasi);
+
+        // Selesai + sudah diulas. Rating dan jumlah ulasan lapangan sudah diisi di data lapangan,
+        // jadi tidak dihitung ulang di sini.
+        $duaHariLalu = $hariIni->copy()->subDays(2);
+        $tigaHariLalu = $hariIni->copy()->subDays(3);
+
+        $this->buatUlasan(
+            $this->buatBooking($andi, $lapangan[0], $duaHariLalu, 17, 2, Booking::STATUS_SELESAI, 'N4P4', $konfirmasi),
+            5,
+            'Lantai interlock-nya rata dan lampunya terang. Cocok sekali untuk main malam bareng tim.'
+        );
+        $this->buatUlasan(
+            $this->buatBooking($budi, $lapangan[0], $tigaHariLalu, 20, 2, Booking::STATUS_SELESAI, 'Q6R6', $konfirmasi),
+            4,
+            'Fasilitas lengkap dan ruang ganti bersih. Parkir agak penuh di jam ramai.'
+        );
+        $this->buatUlasan(
+            $this->buatBooking($andi, $lapangan[1], $duaHariLalu, 19, 1, Booking::STATUS_SELESAI, 'S8T8', $konfirmasi),
+            5,
+            'Atapnya bikin tetap nyaman waktu hujan. Pelayanan ramah, pasti booking lagi.'
+        );
+    }
+
+    private function buatUlasan(Booking $booking, int $rating, string $komentar): Review
+    {
+        return Review::create([
+            'user_id' => $booking->user_id,
+            'field_id' => $booking->field_id,
+            'booking_id' => $booking->id,
+            'rating' => $rating,
+            'comment' => $komentar,
+        ]);
     }
 
     private function buatUser(string $name, string $email, string $phone, string $role): User

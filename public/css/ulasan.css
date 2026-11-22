@@ -1,0 +1,238 @@
+/* Garuda Arena: ulasan dan rating (form di /riwayat). Dimuat setelah riwayat.css. */
+
+/* ---------- Pembungkus kartu + panel ---------- */
+.riwayat-butir {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* ---------- Panel ulasan ---------- */
+.ulasan-panel {
+    padding: 1.25rem;
+    border: 1px solid var(--hijau-200);
+    border-radius: 1rem;
+    background-color: var(--hijau-muda);
+    animation: muncul-naik 0.4s ease both;
+}
+
+.ulasan-judul {
+    margin: 0;
+    font-family: var(--font-judul);
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 700;
+    color: var(--hijau-tua);
+}
+
+.ulasan-petunjuk {
+    margin: 0.25rem 0 1rem;
+    font-size: 0.875rem;
+    color: var(--abu-600);
+}
+
+/* ---------- Ulasan yang sudah terkirim ---------- */
+.ulasan-kepala {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ulasan-bintang {
+    font-size: 1.125rem;
+    letter-spacing: 0.1em;
+    color: #f59e0b;
+}
+
+.ulasan-tanggal {
+    font-size: 0.75rem;
+    color: var(--abu-500);
+}
+
+.ulasan-isi {
+    margin: 0.5rem 0 0;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+    color: var(--teks);
+}
+
+/* ---------- Formulir ---------- */
+.ulasan-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ulasan-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--abu-800);
+}
+
+.ulasan-isian {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--garis);
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    font-family: inherit;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+    resize: vertical;
+}
+
+.ulasan-isian:focus {
+    outline: 2px solid var(--hijau);
+    outline-offset: 1px;
+    border-color: var(--hijau);
+}
+
+.ulasan-galat {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: #b91c1c;
+}
+
+.ulasan-tombol {
+    align-self: flex-start;
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--hijau);
+    border-radius: 0.5rem;
+    background-color: var(--hijau);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.ulasan-tombol:hover {
+    border-color: var(--hijau-tua);
+    background-color: var(--hijau-tua);
+}
+
+/* ---------- Pilih bintang (radio + CSS) ----------
+   Urutan di HTML 5..1, ditampilkan terbalik (row-reverse) agar 1..5 dari kiri.
+   Bintang di kanan elemen terpilih (di HTML) = bintang bernilai lebih kecil. */
+.bintang-pilih {
+    position: relative;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 0.125rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.bintang-judul {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+}
+
+.bintang-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.bintang-label {
+    font-size: 2rem;
+    line-height: 1;
+    color: #d1d5db;
+    cursor: pointer;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.bintang-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+}
+
+.bintang-input:checked ~ .bintang-label,
+.bintang-label:hover,
+.bintang-label:hover ~ .bintang-label {
+    color: #f59e0b;
+}
+
+.bintang-label:hover {
+    transform: scale(1.15);
+}
+
+.bintang-input:focus-visible + .bintang-label {
+    outline: 2px solid var(--hijau);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+}
+
+/* ---------- Animasi ---------- */
+@keyframes muncul-naik {
+    from {
+        opacity: 0;
+        transform: translateY(0.5rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ulasan-panel {
+        animation: none;
+    }
+
+    .bintang-label {
+        transition: none;
+    }
+}
+
+/* ---------- Layar >= 1024px ---------- */
+@media (min-width: 1024px) {
+    .ulasan-panel {
+        padding: 1.25rem 1.5rem;
+    }
+}
+
+
+/* ---------- Daftar ulasan di halaman detail lapangan ---------- */
+.ulasan-daftar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ulasan-butir {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--garis);
+}
+
+.ulasan-butir:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.ulasan-nama {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--abu-800);
+}
+
+.ulasan-kosong {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--abu-500);
+}

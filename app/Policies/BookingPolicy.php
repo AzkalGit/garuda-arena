@@ -44,6 +44,14 @@ class BookingPolicy
             : Response::denyAsNotFound();
     }
 
+    /** Menulis ulasan: hanya pemilik booking, selain itu 404 (status dicek di Review::buat). */
+    public function review(User $user, Booking $booking): Response
+    {
+        return $user->id === $booking->user_id
+            ? Response::allow()
+            : Response::denyAsNotFound();
+    }
+
     /** Melihat daftar semua booking di panel admin: hanya admin (selain itu 403). */
     public function kelola(User $user): bool
     {

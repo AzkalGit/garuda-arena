@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -58,6 +59,21 @@ class Booking extends Model
     public function verifier(): BelongsTo
     {
         return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    public function review(): HasOne
+    {
+        return $this->hasOne(Review::class);
+    }
+
+    /**
+     * Bisa diulas sejak pembayaran dikonfirmasi admin (dikonfirmasi) atau
+     * setelah selesai, selama belum punya ulasan.
+     */
+    public function bisaDiulas(): bool
+    {
+        return in_array($this->status, [self::STATUS_DIKONFIRMASI, self::STATUS_SELESAI], true)
+            && $this->review === null;
     }
 
     /** Jam selesai = jam mulai + durasi. */

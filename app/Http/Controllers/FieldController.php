@@ -96,6 +96,12 @@ class FieldController extends Controller
             'hariIni' => Carbon::today()->toDateString(),
             'slot' => Booking::petaJam($field, $tanggal),
             'durasiOpsi' => [1, 2, 3],
+            'ulasan' => $field->reviews()
+                ->with('user')
+                ->orderByDesc('created_at')
+                ->orderByDesc('id')
+                ->limit(10)
+                ->get(),
         ]);
     }
 

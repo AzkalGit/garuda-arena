@@ -43,6 +43,11 @@ class Field extends Model
         return $this->hasMany(Booking::class);
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
     public function isActive(): bool
     {
         return $this->status === self::STATUS_AKTIF;

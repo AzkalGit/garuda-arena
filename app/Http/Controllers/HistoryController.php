@@ -24,7 +24,7 @@ class HistoryController extends Controller
         }
 
         $bookings = Booking::query()
-            ->with('field')
+            ->with(['field', 'review'])
             ->where('user_id', $request->user()->id)
             ->when($status !== null, fn ($query) => $query->where('status', $status))
             ->orderByDesc('created_at')

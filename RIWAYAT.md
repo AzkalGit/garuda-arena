@@ -178,3 +178,8 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 - **Belum teruji:** tampilan browser (grid 1/2/3 kolom, tampilan besar, hover, menu aktif di navbar dan hamburger).
 - **Insiden:** setelah tes pertama 41 gagal, karena `use GalleryController` sudah masuk tetapi baris rute belum; Pint lalu membuang `use` yang tak terpakai sehingga `routes/web.php` kembali ke versi lama dan navbar memanggil rute yang tidak ada. Diperbaiki dengan menempel use + rute sekaligus sebelum Pint.
 - **Pelajaran:** perubahan `routes/web.php` yang terdiri dari `use` + rute harus ditempel keduanya sebelum Pint; verifikasi `grep -c` dan ` M` dulu, baru Pint dan tes.
+### H3 penutup — syarat ulasan diperlonggar (20–22 Nov 2026)
+- `Booking::bisaDiulas()` kini true untuk status `dikonfirmasi` atau `selesai` yang belum punya ulasan (permintaan pemilik agar demo cepat). `menunggu_pembayaran`, `menunggu_verifikasi`, dan `dibatalkan` tetap ditolak.
+- `ReviewTest` (9 tes) dan `RiwayatUlasanTest` (5 tes) diperbarui: tes "belum selesai" diganti "belum dibayar" (`menunggu_verifikasi`); ditambah `test_booking_dikonfirmasi_yang_belum_dimainkan_bisa_diulas` dan `test_booking_dikonfirmasi_menampilkan_form_ulasan`.
+- Tidak ada perubahan di view, CSS, atau seeder. `A1B1` (Andi) dan `C3D3` (Budi) otomatis bisa diulas karena berstatus `dikonfirmasi`.
+- Hasil: **194 passed (683 assertions)**. Browser belum dicek.
