@@ -23,6 +23,9 @@ class DatabaseSeeder extends Seeder
         $andi = $this->buatUser('Andi Pratama', 'andi@garudaarena.test', '081200000002', User::ROLE_PELANGGAN);
         $sari = $this->buatUser('Sari Wulandari', 'sari@garudaarena.test', '081200000003', User::ROLE_PELANGGAN);
         $budi = $this->buatUser('Budi Santoso', 'budi@garudaarena.test', '081200000004', User::ROLE_PELANGGAN);
+        $rina = $this->buatUser('Rina Kusuma', 'rina@garudaarena.test', '081200000005', User::ROLE_PELANGGAN);
+        $dewi = $this->buatUser('Dewi Lestari', 'dewi@garudaarena.test', '081200000006', User::ROLE_PELANGGAN);
+        $fajar = $this->buatUser('Fajar Nugroho', 'fajar@garudaarena.test', '081200000007', User::ROLE_PELANGGAN);
 
         $lapangan = [];
         foreach ($this->dataLapangan() as $data) {
@@ -61,8 +64,8 @@ class DatabaseSeeder extends Seeder
         // Booking Sari (L2M2) sengaja belum diulas: dipakai untuk demo menulis ulasan langsung.
         $this->buatBooking($sari, $lapangan[0], $kemarin, 19, 2, Booking::STATUS_SELESAI, 'L2M2', $konfirmasi);
 
-        // Selesai + sudah diulas. Rating dan jumlah ulasan lapangan sudah diisi di data lapangan,
-        // jadi tidak dihitung ulang di sini.
+        // Selesai + sudah diulas. Rating dan jumlah ulasan semua lapangan dihitung ulang
+        // dari tabel reviews di akhir run() (hitungUlangRating), jadi angkanya selalu cocok.
         $duaHariLalu = $hariIni->copy()->subDays(2);
         $tigaHariLalu = $hariIni->copy()->subDays(3);
 
@@ -81,6 +84,19 @@ class DatabaseSeeder extends Seeder
             5,
             'Atapnya bikin tetap nyaman waktu hujan. Pelayanan ramah, pasti booking lagi.'
         );
+
+        // Ulasan demo tambahan: tiap ulasan punya booking selesai sendiri (satu ulasan per booking).
+        $pengulas = [$andi, $sari, $budi, $rina, $dewi, $fajar];
+        $nomor = 0;
+
+        foreach ($this->ulasanTambahan() as $indeks => $daftar) {
+            foreach ($daftar as [$rating, $komentar]) {
+                $nomor++;
+                $this->buatUlasanTambahan($lapangan[$indeks], $pengulas[$nomor % count($pengulas)], $rating, $komentar, $nomor);
+            }
+        }
+
+        $this->hitungUlangRating();
     }
 
     private function buatUlasan(Booking $booking, int $rating, string $komentar): Review
@@ -92,6 +108,100 @@ class DatabaseSeeder extends Seeder
             'rating' => $rating,
             'comment' => $komentar,
         ]);
+    }
+
+    private function buatUlasanTambahan(Field $field, User $user, int $rating, string $komentar, int $nomor): void
+    {
+        $tanggal = Carbon::today()->subDays(3 + $nomor);
+
+        $booking = $this->buatBooking(
+            $user,
+            $field,
+            $tanggal,
+            8 + ($nomor * 3) % 14,
+            1,
+            Booking::STATUS_SELESAI,
+            'U'.str_pad((string) $nomor, 3, '0', STR_PAD_LEFT),
+        );
+
+        $waktu = $tanggal->copy()->setTime(23, 0);
+
+        $this->buatUlasan($booking, $rating, $komentar)
+            ->forceFill(['created_at' => $waktu, 'updated_at' => $waktu])
+            ->save();
+    }
+
+    /** Rating dan jumlah ulasan tiap lapangan dihitung dari tabel reviews. */
+    private function hitungUlangRating(): void
+    {
+        foreach (Field::all() as $field) {
+            $ulasan = Review::query()->where('field_id', $field->id);
+            $jumlah = $ulasan->count();
+
+            $field->update([
+                'reviews_count' => $jumlah,
+                'rating' => $jumlah > 0 ? round((float) $ulasan->avg('rating'), 1) : 0,
+            ]);
+        }
+    }
+
+    /**
+     * Kunci = urutan lapangan di dataLapangan() (0 VIP, 1 Merdeka, 2 Champions, 3 Rencong,
+     * 4 Seulawah, 5 Lampuuk, 6 Peunayong, 7 Krueng). Nilai = daftar [rating, komentar].
+     *
+     * @return array<int, array<int, array{0:int, 1:string}>>
+     */
+    private function ulasanTambahan(): array
+    {
+        return [
+            0 => [
+                [5, 'Pencahayaan LED-nya terang dan lantainya tidak licin. Mainnya jadi lebih nyaman.'],
+                [4, 'AC dan sirkulasi udaranya enak, tidak pengap walau main dua jam.'],
+                [5, 'Shower air panasnya sangat membantu setelah main malam.'],
+                [4, 'Lapangan bagus, hanya antrean kantin agak lama di akhir pekan.'],
+                [5, 'Sudah beberapa kali sewa di sini dan kualitasnya selalu terjaga.'],
+                [3, 'Lapangannya bagus, tetapi parkir cukup penuh saat jam ramai.'],
+            ],
+            1 => [
+                [5, 'Rumputnya empuk, aman untuk sliding tackle. Tim kami puas.'],
+                [4, 'Atap pelindungnya membuat main siang tidak terlalu panas.'],
+                [5, 'Kantinnya enak dan harganya bersahabat.'],
+                [4, 'Tempatnya luas dan parkirnya lega, cocok untuk komunitas.'],
+            ],
+            2 => [
+                [5, 'Lantai vinyl-nya grip-nya pas, bola mengalir mulus.'],
+                [5, 'Tribun dan papan skornya bikin sparing terasa seperti turnamen.'],
+                [4, 'Ruang loker bersih dan lengkap, AC-nya dingin.'],
+                [5, 'Pernah dipakai untuk turnamen kantor dan semuanya lancar.'],
+                [4, 'Fasilitas live streaming-nya berguna untuk merekam pertandingan.'],
+                [5, 'Salah satu lapangan terbaik yang pernah kami pakai.'],
+            ],
+            3 => [
+                [4, 'Harga bersahabat dengan permukaan lantai yang kesat dan aman.'],
+                [5, 'Cocok untuk sparing santai bersama teman kuliah.'],
+                [4, 'Wi-Fi-nya lancar, kantinnya buka sampai malam.'],
+            ],
+            4 => [
+                [5, 'Anginnya sejuk, enak untuk latihan sore hari.'],
+                [4, 'Rumputnya terawat, musalanya bersih dan dekat dari lapangan.'],
+                [4, 'Pelayanan ramah, jadwal booking tepat waktu.'],
+            ],
+            5 => [
+                [5, 'Lampu sorotnya terang, malam hari tetap nyaman bermain.'],
+                [4, 'Shower air panasnya enak dan area kantinnya luas.'],
+            ],
+            6 => [
+                [5, 'Standar premium, lantainya sangat rapi dan nyaman untuk pemain profesional.'],
+                [5, 'Kami pakai untuk pertandingan antar perusahaan dan hasilnya memuaskan.'],
+                [4, 'Fasilitas lengkap, hanya harga sedikit lebih tinggi.'],
+                [5, 'Siaran langsungnya berjalan lancar, penonton ikut senang.'],
+            ],
+            7 => [
+                [4, 'Murah tetapi kualitas lantainya tetap bagus untuk mahasiswa.'],
+                [5, 'Favorit kami untuk main rutin tiap pekan.'],
+                [4, 'Tempatnya sederhana, bersih, dan mudah dijangkau.'],
+            ],
+        ];
     }
 
     private function buatUser(string $name, string $email, string $phone, string $role): User

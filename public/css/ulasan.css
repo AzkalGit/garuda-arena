@@ -236,3 +236,40 @@
     font-size: 0.875rem;
     color: var(--abu-500);
 }
+
+/* ---------- Lihat selengkapnya (detail lapangan) ---------- */
+.ulasan-jumlah {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--abu-500);
+}
+
+.ulasan-lebih {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--garis);
+    text-align: center;
+}
+
+.ulasan-tautan {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--hijau);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--hijau);
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ulasan-tautan:hover {
+    background-color: var(--hijau);
+    color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ulasan-tautan {
+        transition: none;
+    }
+}

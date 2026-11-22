@@ -63,7 +63,7 @@
                 </div>
 
                 <div class="kartu-detail longgar">
-                    <h2 class="detail-subjudul">Ulasan Pelanggan</h2>
+                    <h2 class="detail-subjudul" id="ulasan">Ulasan Pelanggan <span class="ulasan-jumlah">({{ $jumlahUlasan }})</span></h2>
                     @forelse ($ulasan as $butir)
                         @if ($loop->first)
                             <ul class="ulasan-daftar">
@@ -84,6 +84,16 @@
                     @empty
                         <p class="ulasan-kosong">Belum ada ulasan untuk lapangan ini.</p>
                     @endforelse
+
+                    @if ($jumlahUlasan > $ulasanAwal)
+                        <div class="ulasan-lebih">
+                            @if ($semuaUlasan)
+                                <a href="{{ route('lapangan.show', ['field' => $field, 'tanggal' => $tanggal]) }}#ulasan" class="ulasan-tautan">Tampilkan lebih sedikit</a>
+                            @else
+                                <a href="{{ route('lapangan.show', ['field' => $field, 'tanggal' => $tanggal, 'ulasan' => 'semua']) }}#ulasan" class="ulasan-tautan">Lihat selengkapnya ({{ $jumlahUlasan }} ulasan)</a>
+                            @endif
+                        </div>
+                    @endif
                 </div>
             </div>
 

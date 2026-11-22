@@ -10,6 +10,8 @@ use Illuminate\View\View;
 
 class FieldController extends Controller
 {
+    private const ULASAN_AWAL = 5;
+
     private const HARGA = [
         'under150' => 'Di bawah Rp150.000',
         '150to200' => 'Rp150.000 – Rp200.000',
@@ -76,6 +78,9 @@ class FieldController extends Controller
         $tanggal = $this->tanggalDipilih($request->query('tanggal'));
         $pengguna = $request->user();
 
+        $jumlahUlasan = $field->reviews()->count();
+        $semuaUlasan = $request->query('ulasan') === 'semua' && $jumlahUlasan > self::ULASAN_AWAL;
+
         // tamu | pelanggan | dilarang (admin tidak boleh membuat booking)
         $mode = $pengguna === null
             ? 'tamu'
@@ -100,8 +105,11 @@ class FieldController extends Controller
                 ->with('user')
                 ->orderByDesc('created_at')
                 ->orderByDesc('id')
-                ->limit(10)
+                ->when(! $semuaUlasan, fn ($query) => $query->limit(self::ULASAN_AWAL))
                 ->get(),
+            'jumlahUlasan' => $jumlahUlasan,
+            'semuaUlasan' => $semuaUlasan,
+            'ulasanAwal' => self::ULASAN_AWAL,
         ]);
     }
 

@@ -121,7 +121,7 @@ class FondasiTest extends TestCase
         $this->assertSame(7, Field::where('status', Field::STATUS_AKTIF)->count());
         $this->assertSame(1, Field::where('status', Field::STATUS_NONAKTIF)->count());
         $this->assertSame(1, User::where('role', User::ROLE_ADMIN)->count());
-        $this->assertSame(3, User::where('role', User::ROLE_PELANGGAN)->count());
+        $this->assertSame(6, User::where('role', User::ROLE_PELANGGAN)->count());
         $this->assertGreaterThan(0, Booking::count());
     }
 
