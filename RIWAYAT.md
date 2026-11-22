@@ -196,3 +196,10 @@ Langkah CSS dan R1 (16 Nov 2026): aturan dosen: CSS terpisah dari view di public
 
 ## Perbaikan detail lapangan (22 Nov 2026)
 - `detail.css`: baris `.kartu-booking { position: sticky; top: 7rem; }` dihapus agar panel pemilihan jam ikut ter-scroll bersama halaman. Sudah dicek pemilik di browser.
+
+### Akun demo presentasi (22 Nov 2026)
+- Seeder: admin diganti `garuda@gmail.com` (sebelumnya `admin@g`). `buatUser()` menerima kata sandi opsional (akun lama tetap `DEMO_PASSWORD`).
+- Metode baru `buatAkunDemo()`: 4 pelanggan (Azkal, Furqan, Fandi, Fadel), masing-masing 4–5 booking (selesai + diulas ×2, dikonfirmasi, menunggu verifikasi/pembayaran; Fadel juga satu dibatalkan). Tanggal -3..-1 dan +4..+5 agar tidak bentrok.
+- `hitungUlangRating()` tetap dipakai: Seulawah 5, Krueng 5, Rencong 5, Champions 7, Peunayong 5; VIP 8, Merdeka 5, Lampuuk 2 tidak berubah. Total 42 ulasan.
+- Tes: `AkunDemoTest` (4 tes); `FondasiTest` pelanggan 6 → 10. Hasil: 211 passed (763 assertions).
+- Pelajaran: tes dengan assertion hanya di dalam loop bisa "risky"; beri satu assertion di luar loop.

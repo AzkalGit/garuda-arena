@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        $admin = $this->buatUser('Admin Garuda', 'admin@g', '081200000001', User::ROLE_ADMIN);
+        $admin = $this->buatUser('Admin Garuda', 'garuda@gmail.com', '081200000001', User::ROLE_ADMIN, 'garuda123');
         $andi = $this->buatUser('Andi Pratama', 'andi@garudaarena.test', '081200000002', User::ROLE_PELANGGAN);
         $sari = $this->buatUser('Sari Wulandari', 'sari@garudaarena.test', '081200000003', User::ROLE_PELANGGAN);
         $budi = $this->buatUser('Budi Santoso', 'budi@garudaarena.test', '081200000004', User::ROLE_PELANGGAN);
@@ -95,6 +95,8 @@ class DatabaseSeeder extends Seeder
                 $this->buatUlasanTambahan($lapangan[$indeks], $pengulas[$nomor % count($pengulas)], $rating, $komentar, $nomor);
             }
         }
+
+        $this->buatAkunDemo($admin, $lapangan);
 
         $this->hitungUlangRating();
     }
@@ -204,17 +206,86 @@ class DatabaseSeeder extends Seeder
         ];
     }
 
-    private function buatUser(string $name, string $email, string $phone, string $role): User
+    private function buatUser(string $name, string $email, string $phone, string $role, ?string $sandi = null): User
     {
         $user = new User([
             'name' => $name,
             'email' => $email,
             'phone' => $phone,
-            'password' => self::DEMO_PASSWORD,
+            'password' => $sandi ?? self::DEMO_PASSWORD,
         ]);
         $user->forceFill(['role' => $role, 'email_verified_at' => now()])->save();
 
         return $user;
+    }
+
+    /**
+     * Empat akun demo untuk presentasi, masing-masing dengan riwayat booking dan ulasan sendiri.
+     * Baris riwayat: [indeks lapangan, selisih hari, jam mulai, durasi, status, akhiran kode, ulasan [rating, komentar] atau null].
+     * Tanggal -1..-3 dan +4..+5 dipilih agar tidak bentrok dengan booking demo lain.
+     *
+     * @param  array<int, Field>  $lapangan
+     */
+    private function buatAkunDemo(User $admin, array $lapangan): void
+    {
+        $hariIni = Carbon::today();
+        $konfirmasi = ['verified_by' => $admin->id, 'verified_at' => now()];
+
+        $akun = [
+            ['Azkal', 'azkal@gmail.com', '081200000008', 'azkal123', [
+                [4, -1, 19, 2, Booking::STATUS_SELESAI, 'AZ01', [5, 'Rumputnya terawat dan anginnya sejuk. Main sore jadi tidak cepat capek.']],
+                [7, -2, 18, 1, Booking::STATUS_SELESAI, 'AZ02', [4, 'Harganya terjangkau dan lantainya masih bagus. Cocok untuk latihan rutin.']],
+                [6, 4, 20, 2, Booking::STATUS_DIKONFIRMASI, 'AZ03', null],
+                [2, 5, 19, 1, Booking::STATUS_MENUNGGU_VERIFIKASI, 'AZ04', null],
+                [3, 4, 18, 2, Booking::STATUS_MENUNGGU_PEMBAYARAN, 'AZ05', null],
+            ]],
+            ['Furqan', 'furqan@gmail.com', '081200000009', 'furqan123', [
+                [2, -1, 20, 2, Booking::STATUS_SELESAI, 'FQ01', [5, 'Tribun dan papan skornya bikin sparing terasa seperti pertandingan sungguhan.']],
+                [3, -3, 16, 2, Booking::STATUS_SELESAI, 'FQ02', [4, 'Lantai interlock-nya kesat dan aman. Kantinnya buka sampai malam.']],
+                [0, 4, 19, 2, Booking::STATUS_DIKONFIRMASI, 'FQ03', null],
+                [4, 5, 17, 1, Booking::STATUS_MENUNGGU_PEMBAYARAN, 'FQ04', null],
+            ]],
+            ['Fandi', 'fandi@gmail.com', '081200000010', 'fandi123', [
+                [6, -2, 19, 2, Booking::STATUS_SELESAI, 'FD01', [5, 'Lantai vinyl-nya rapi sekali, bola mengalir mulus. Layak untuk pertandingan antar tim.']],
+                [3, -2, 20, 1, Booking::STATUS_SELESAI, 'FD02', [4, 'Wi-Fi lancar dan pelayanannya ramah. Jadwal booking tepat waktu.']],
+                [1, 4, 20, 2, Booking::STATUS_MENUNGGU_VERIFIKASI, 'FD03', null],
+                [7, 5, 19, 2, Booking::STATUS_DIKONFIRMASI, 'FD04', null],
+            ]],
+            ['Fadel', 'fadel@gmail.com', '081200000011', 'fadel123', [
+                [4, -3, 17, 2, Booking::STATUS_SELESAI, 'FL01', [5, 'Musalanya bersih dan dekat dari lapangan. Tempatnya nyaman untuk main bareng keluarga.']],
+                [7, -3, 20, 1, Booking::STATUS_SELESAI, 'FL02', [4, 'Sederhana tetapi bersih, dan mudah dijangkau dari kampus.']],
+                [2, 4, 18, 2, Booking::STATUS_DIKONFIRMASI, 'FL03', null],
+                [0, 5, 20, 2, Booking::STATUS_MENUNGGU_PEMBAYARAN, 'FL04', null],
+                [1, 5, 16, 1, Booking::STATUS_DIBATALKAN, 'FL05', null],
+            ]],
+        ];
+
+        foreach ($akun as [$nama, $email, $telepon, $sandi, $riwayat]) {
+            $user = $this->buatUser($nama, $email, $telepon, User::ROLE_PELANGGAN, $sandi);
+
+            foreach ($riwayat as [$indeks, $selisih, $jam, $durasi, $status, $kode, $ulasan]) {
+                $tanggal = $hariIni->copy()->addDays($selisih);
+
+                $tambahan = match ($status) {
+                    Booking::STATUS_SELESAI, Booking::STATUS_DIKONFIRMASI => $konfirmasi,
+                    Booking::STATUS_MENUNGGU_VERIFIKASI => ['proof_name' => 'bukti-demo.jpg', 'proof_submitted_at' => now()],
+                    Booking::STATUS_MENUNGGU_PEMBAYARAN => ['expires_at' => now()->addMinutes((int) config('garuda.pay_window_minutes'))],
+                    Booking::STATUS_DIBATALKAN => ['cancelled_reason' => 'Dibatalkan pelanggan'],
+                    default => [],
+                };
+
+                $booking = $this->buatBooking($user, $lapangan[$indeks], $tanggal, $jam, $durasi, $status, $kode, $tambahan);
+
+                if ($ulasan !== null) {
+                    [$rating, $komentar] = $ulasan;
+                    $waktu = $tanggal->copy()->setTime(23, 0);
+
+                    $this->buatUlasan($booking, $rating, $komentar)
+                        ->forceFill(['created_at' => $waktu, 'updated_at' => $waktu])
+                        ->save();
+                }
+            }
+        }
     }
 
     private function buatBooking(
